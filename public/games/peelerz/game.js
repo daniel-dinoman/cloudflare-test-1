@@ -96,6 +96,22 @@ const recipes = [
 
     {
         ingredients: [
+            "Orange Atom",
+            "Orange Pebble"
+        ],
+        result: "Orange Air"
+    },
+
+    {
+        ingredients: [
+            "EVIL Orange Atom",
+            "EVIL Orange Pebble"
+        ],
+        result: "EVIL Orange Air"
+    },
+
+    {
+        ingredients: [
             "EVIL Orange Strip",
             "EVIL Orange Strip"
         ],
