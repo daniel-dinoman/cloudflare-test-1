@@ -1,20 +1,23 @@
 const answers = [
-    "JUICE",
-    "PEELS",
-    "RINDS",
-    "PULPY",
-    "ZESTY",
-    "JUICY",
-    "GROVE",
-    "SWEET",
-    "FRUIT",
-    "PRESS",
-    "SEEDY"
+    "APPLE",
+    "HOUSE",
+    "HORSE",
+    "CRANE",
+    "SLATE",
+    "STARE",
+    "PLANT",
+    "WATER",
+    "WORLD",
+    "BREAD",
+    "SHEEP",
+    "MOUSE",
+    "LIGHT",
+    "STONE",
+    "CLOUD"
 ];
 
-const validWords = new Set(answers);
-
 let answer = answers[Math.floor(Math.random() * answers.length)];
+
 let currentGuess = "";
 let currentRow = 0;
 let gameOver = false;
@@ -22,6 +25,73 @@ let gameOver = false;
 const board = document.querySelector("#board");
 const keyboard = document.querySelector("#keyboard");
 const message = document.querySelector("#message");
+
+// Create response text
+const response = document.createElement("div");
+response.id = "response";
+response.textContent = "";
+document.querySelector(".game").appendChild(response);
+
+// Funny reactions
+const reactions = {
+    HORSE: [
+        "why did you guess horse",
+        "this isn't horsle",
+        "bro thinks this is HORSLE",
+        "neigh"
+    ],
+
+    APPLE: [
+        "WRONG FRUIT.",
+        "that's an apple",
+        "get that thing out of here",
+        "🍎 detected. unacceptable."
+    ],
+
+    ORANGE: [
+        "that's literally me",
+        "ORANGE.",
+        "bro guessed the game's name",
+        "okay genius"
+    ],
+
+    HOUSE: [
+        "nice house",
+        "why are we talking about houses",
+        "cool house bro"
+    ],
+
+    SHEEP: [
+        "🐑",
+        "why sheep",
+        "baa"
+    ],
+
+    MOUSE: [
+        "🐭",
+        "mouse detected",
+        "squeak"
+    ]
+};
+
+const randomReactions = [
+    "interesting.",
+    "okay.",
+    "sure bro",
+    "why.",
+    "alright then",
+    "I don't know what to say to that",
+    "that's certainly a word",
+    "noted.",
+    "fascinating.",
+    "you really typed that",
+    "okay buddy",
+    "hmm.",
+    "moving on...",
+    "what",
+    "👍",
+    "orange"
+];
 
 const keys = [
     ["Q","W","E","R","T","Y","U","I","O","P"],
@@ -70,7 +140,7 @@ for (const row of keys) {
     }
 
     keyboard.appendChild(keyboardRow);
-}
+    }
 
 function handleKey(key) {
     if (gameOver) return;
@@ -108,16 +178,15 @@ function submitGuess() {
         return;
     }
 
-    if (!validWords.has(currentGuess)) {
-        showMessage("NOT AN ORANGE WORD!");
-        return;
-    }
+    // React to the guess
+    reactToGuess(currentGuess);
 
     const result = checkGuess(currentGuess, answer);
     colorRow(result);
 
     if (currentGuess === answer) {
         showMessage("YOU GOT IT! 🍊");
+        response.textContent = "orange 👍";
         gameOver = true;
         return;
     }
@@ -126,6 +195,7 @@ function submitGuess() {
 
     if (currentRow >= 6) {
         showMessage(`THE WORD WAS ${answer}`);
+        response.textContent = "the orange has won.";
         gameOver = true;
         return;
     }
@@ -138,7 +208,7 @@ function checkGuess(guess, answer) {
     const result = Array(5).fill("wrong");
     const remaining = answer.split("");
 
-    // Correct letters first
+    // Correct letters
     for (let i = 0; i < 5; i++) {
         if (guess[i] === answer[i]) {
             result[i] = "correct";
@@ -146,7 +216,7 @@ function checkGuess(guess, answer) {
         }
     }
 
-    // Then misplaced letters
+    // Wrong position
     for (let i = 0; i < 5; i++) {
         if (result[i] === "correct") continue;
 
@@ -170,6 +240,7 @@ function colorRow(result) {
         tile.classList.add(result[col]);
 
         const letter = currentGuess[col];
+
         const button = [...document.querySelectorAll(".key")]
             .find(btn => btn.textContent === letter);
 
@@ -191,6 +262,19 @@ function colorRow(result) {
             }
         }
     }
+}
+
+function reactToGuess(guess) {
+    let options = reactions[guess];
+
+    if (!options) {
+        options = randomReactions;
+    }
+
+    const reaction =
+        options[Math.floor(Math.random() * options.length)];
+
+    response.textContent = reaction;
 }
 
 function showMessage(text) {
@@ -221,77 +305,3 @@ document.addEventListener("keydown", (event) => {
         handleKey(key);
     }
 });
-
-const orangeMan = document.querySelector("#orange-man");
-const thrownOranges = document.querySelectorAll(".thrown-orange");
-
-let orangeManActive = false;
-
-function orangeManChaos() {
-    if (gameOver || orangeManActive) return;
-
-    orangeManActive = true;
-
-    orangeMan.style.display = "block";
-    orangeMan.style.right = "-180px";
-
-    // Pop the guy onto the screen
-    orangeMan.animate(
-        [
-            { right: "-180px" },
-            { right: "20px" }
-        ],
-        {
-            duration: 600,
-            easing: "ease-out",
-            fill: "forwards"
-        }
-    );
-
-    // Throw oranges
-    thrownOranges.forEach((orange, index) => {
-        setTimeout(() => {
-            orange.style.display = "block";
-
-            orange.animate(
-                [
-                    {
-                        left: "20px",
-                        top: `${45 + index * 30}px`,
-                        opacity: 1
-                    },
-                    {
-                        left: "-500px",
-                        top: `${20 + index * 80}px`,
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration: 1000,
-                    easing: "linear",
-                    fill: "forwards"
-                }
-            );
-        }, 700 + index * 350);
-    });
-
-    // Remove him after the chaos
-    setTimeout(() => {
-        orangeMan.style.display = "none";
-
-        thrownOranges.forEach(orange => {
-            orange.style.display = "none";
-            orange.getAnimations().forEach(animation => animation.cancel());
-        });
-
-        orangeMan.getAnimations().forEach(animation => animation.cancel());
-
-        orangeManActive = false;
-    }, 3500);
-}
-
-setInterval(() => {
-    if (!gameOver && Math.random() < 0.15) {
-        orangeManChaos();
-    }
-}, 10000);
