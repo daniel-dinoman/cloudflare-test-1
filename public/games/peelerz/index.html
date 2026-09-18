@@ -10,6 +10,13 @@
         * {
             box-sizing: border-box;
         }
+        .peeling {
+            transform: scale(0.85) rotate(-8deg);
+        }
+        
+        .peeling .orange {
+            transform: rotate(15deg);
+        }
         .back-button {
             position: fixed;
             top: 20px;
@@ -365,19 +372,41 @@
             <!-- Crafting menu -->
 
             <div class="craft-menu" id="craftMenu">
-
+            
                 <button class="close-button" id="closeCraft">
                     ×
                 </button>
-
-                <h2 class="craft-title">
-                    CRAFTING
-                </h2>
-
-                <div class="craft-placeholder">
-                    Crafting recipes will go here.
+            
+                <h2 class="craft-title">CRAFTING</h2>
+            
+                <div class="inventory-title">
+                    INVENTORY
                 </div>
-
+            
+                <div class="inventory" id="inventory">
+                    <div class="empty-inventory">
+                        Nothing here yet!
+                    </div>
+                </div>
+            
+                <div class="craft-slots">
+            
+                    <button class="craft-slot" id="slot1"></button>
+            
+                    <div class="plus">+</div>
+            
+                    <button class="craft-slot" id="slot2"></button>
+            
+                    <div class="plus">+</div>
+            
+                    <button class="craft-slot" id="slot3"></button>
+            
+                </div>
+            
+                <button class="craft-action" id="craftAction">
+                    CRAFT
+                </button>
+            
             </div>
 
         </div>
