@@ -221,3 +221,77 @@ document.addEventListener("keydown", (event) => {
         handleKey(key);
     }
 });
+
+const orangeMan = document.querySelector("#orange-man");
+const thrownOranges = document.querySelectorAll(".thrown-orange");
+
+let orangeManActive = false;
+
+function orangeManChaos() {
+    if (gameOver || orangeManActive) return;
+
+    orangeManActive = true;
+
+    orangeMan.style.display = "block";
+    orangeMan.style.right = "-180px";
+
+    // Pop the guy onto the screen
+    orangeMan.animate(
+        [
+            { right: "-180px" },
+            { right: "20px" }
+        ],
+        {
+            duration: 600,
+            easing: "ease-out",
+            fill: "forwards"
+        }
+    );
+
+    // Throw oranges
+    thrownOranges.forEach((orange, index) => {
+        setTimeout(() => {
+            orange.style.display = "block";
+
+            orange.animate(
+                [
+                    {
+                        left: "20px",
+                        top: `${45 + index * 30}px`,
+                        opacity: 1
+                    },
+                    {
+                        left: "-500px",
+                        top: `${20 + index * 80}px`,
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration: 1000,
+                    easing: "linear",
+                    fill: "forwards"
+                }
+            );
+        }, 700 + index * 350);
+    });
+
+    // Remove him after the chaos
+    setTimeout(() => {
+        orangeMan.style.display = "none";
+
+        thrownOranges.forEach(orange => {
+            orange.style.display = "none";
+            orange.getAnimations().forEach(animation => animation.cancel());
+        });
+
+        orangeMan.getAnimations().forEach(animation => animation.cancel());
+
+        orangeManActive = false;
+    }, 3500);
+}
+
+setInterval(() => {
+    if (!gameOver && Math.random() < 0.15) {
+        orangeManChaos();
+    }
+}, 10000);
