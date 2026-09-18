@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Peelerz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #24150d;
+            color: #fff3dc;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .game {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Title */
+
+        .title {
+            margin-top: 25px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #f28c18;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            margin-top: -8px;
+            color: #d6b58b;
+            font-size: 15px;
+        }
+
+        /* Main game area */
+
+        .game-area {
+            width: 100%;
+            max-width: 1000px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Fruit switcher */
+
+        .fruit-switcher {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .switch-button {
+            width: 55px;
+            height: 45px;
+
+            border: 2px solid #c76b12;
+            border-radius: 8px;
+
+            background: #6b3510;
+            color: #fff3dc;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .switch-button:hover {
+            background: #8a4512;
+        }
+
+        .fruit-name {
+            font-size: 17px;
+            font-weight: bold;
+            color: #f28c18;
+        }
+
+        /* Center fruit */
+
+        .fruit-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fruit {
+            width: 260px;
+            height: 260px;
+
+            border: none;
+            background: transparent;
+
+            font-size: 180px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            transition: transform 0.12s ease;
+        }
+
+        .fruit:hover {
+            transform: scale(1.05);
+        }
+
+        .fruit:active {
+            transform: scale(0.92);
+        }
+
+        .click-text {
+            margin-top: 15px;
+            color: #d6b58b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Result */
+
+        .result {
+            min-height: 35px;
+            margin-top: 20px;
+
+            color: #f28c18;
+            font-size: 20px;
+            font-weight: bold;
+
+            text-align: center;
+        }
+
+        /* Craft button */
+
+        .craft-button {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            padding: 16px 25px;
+
+            border: 2px solid #f28c18;
+            border-radius: 9px;
+
+            background: #d66f0b;
+            color: white;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .craft-button:hover {
+            background: #ef8010;
+        }
+
+        /* Crafting menu */
+
+        .craft-menu {
+            position: absolute;
+
+            width: 500px;
+            max-width: calc(100% - 30px);
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            padding: 25px;
+
+            background: #3a2112;
+            border: 3px solid #c76b12;
+            border-radius: 12px;
+
+            display: none;
+            z-index: 10;
+        }
+
+        .craft-menu.open {
+            display: block;
+        }
+
+        .craft-title {
+            margin: 0 0 20px;
+
+            text-align: center;
+
+            color: #f28c18;
+            font-size: 28px;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+
+            border: none;
+            background: transparent;
+
+            color: #fff3dc;
+            font-size: 24px;
+
+            cursor: pointer;
+        }
+
+        .craft-placeholder {
+            text-align: center;
+            color: #d6b58b;
+            padding: 30px 10px;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 700px) {
+            .title {
+                font-size: 34px;
+            }
+
+            .fruit-switcher {
+                left: 10px;
+            }
+
+            .craft-button {
+                right: 10px;
+                padding: 12px 15px;
+                font-size: 15px;
+            }
+
+            .fruit {
+                font-size: 130px;
+                width: 190px;
+                height: 190px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game">
+
+        <div class="title">PEELERZ</div>
+        <div class="subtitle">peel stuff. get stuff. make stuff.</div>
+
+        <div class="game-area">
+
+            <!-- Fruit switching -->
+
+            <div class="fruit-switcher">
+                <button class="switch-button" id="previousFruit">◀</button>
+
+                <div class="fruit-name" id="fruitName">
+                    ORANGE
+                </div>
+
+                <button class="switch-button" id="nextFruit">▶</button>
+            </div>
+
+            <!-- Main fruit -->
+
+            <div class="fruit-area">
+
+                <button class="fruit" id="fruitButton" aria-label="Peel orange">
+                    🍊
+                </button>
+
+                <div class="click-text">
+                    CLICK THE FRUIT TO PEEL
+                </div>
+
+                <div class="result" id="result">
+                </div>
+
+            </div>
+
+            <!-- Craft -->
+
+            <button class="craft-button" id="craftButton">
+                CRAFT
+            </button>
+
+            <!-- Crafting menu -->
+
+            <div class="craft-menu" id="craftMenu">
+
+                <button class="close-button" id="closeCraft">
+                    ×
+                </button>
+
+                <h2 class="craft-title">
+                    CRAFTING
+                </h2>
+
+                <div class="craft-placeholder">
+                    Crafting recipes will go here.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="game.js"></script>
+
+</body>
+</html>
