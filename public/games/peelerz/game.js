@@ -98,9 +98,32 @@ const recipes = [
 
     {
         ingredients: [
+            "Orange Juice",
+            "Golden Orange Peel"
+        ],
+        result: "Golden Orange Soda"
+    },
+
+    {
+        ingredients: [
+            "Orange Soda",
+            "Golden Orange Soda"
+        ],
+        result: "SUPER Orange Soda"
+    },
+
+    {
+        ingredients: [
             "Orange Seed",
             "Orange Seed",
-            "Orange Seed"
+        ],
+        result: "Orange Plant"
+    },
+    
+    {
+        ingredients: [
+            "Orange Plant",
+            "Orange Plant",
         ],
         result: "Orange Tree"
     },
