@@ -95,6 +95,8 @@ const randomReactions = [
     "who is writing these?",
     "these aren't random btw.",
     "try \"peels\".",
+    "\"If you walk on banana peels, you will fall.\". I didn't want to write the rest.",
+    "The banana peels are going to kill you.",
     "orange"
 ];
 
