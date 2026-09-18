@@ -6,9 +6,54 @@
     <title>Orangle</title>
 
     <style>
-        * {
-            box-sizing: border-box;
+        #orange-man {
+            position: fixed;
+            right: -180px;
+            bottom: 80px;
+            width: 150px;
+            height: 190px;
+            z-index: 500;
+            display: none;
+            pointer-events: none;
         }
+        
+        .orange-man-head {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            font-size: 45px;
+        }
+        
+        .orange-man-body {
+            position: absolute;
+            top: 45px;
+            left: 35px;
+            font-size: 85px;
+        }
+        
+        .thrown-orange {
+            position: absolute;
+            font-size: 28px;
+            display: none;
+        }
+        
+        .orange-1 {
+            top: 45px;
+            left: 20px;
+        }
+        
+        .orange-2 {
+            top: 75px;
+            left: 15px;
+        }
+        
+        .orange-3 {
+            top: 105px;
+            left: 25px;
+        }
+                * {
+                    box-sizing: border-box;
+                }
 
         body {
             margin: 0;
@@ -196,7 +241,16 @@
         }
     </style>
 </head>
+    
+<div id="orange-man">
+    <div class="orange-man-head">😎</div>
+    <div class="orange-man-body">🧍</div>
 
+    <div class="thrown-orange orange-1">🍊</div>
+    <div class="thrown-orange orange-2">🍊</div>
+    <div class="thrown-orange orange-3">🍊</div>
+</div>
+    
 <body>
 
     <div class="game">
