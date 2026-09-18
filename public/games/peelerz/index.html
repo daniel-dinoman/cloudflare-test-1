@@ -107,27 +107,63 @@
         }
 
         .fruit {
-            width: 260px;
-            height: 260px;
+    width: 260px;
+    height: 260px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 
-            border: none;
-            background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            font-size: 180px;
-            line-height: 1;
+    transition: transform 0.12s ease;
+}
 
-            cursor: pointer;
+.fruit:hover {
+    transform: scale(1.05);
+}
 
-            transition: transform 0.12s ease;
-        }
+.fruit:active {
+    transform: scale(0.92);
+}
 
-        .fruit:hover {
-            transform: scale(1.05);
-        }
+.orange {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: #f47c0b;
+    border: 5px solid #c85e05;
+    position: relative;
 
-        .fruit:active {
-            transform: scale(0.92);
-        }
+    box-shadow:
+        inset -18px -15px 0 #d96605,
+        inset 12px 10px 0 #ff9b24;
+}
+
+.orange::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #b84f05;
+    border-radius: 50%;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.orange-leaf {
+    position: absolute;
+    width: 48px;
+    height: 25px;
+    background: #4f7d20;
+    border-radius: 100% 0 100% 0;
+    top: -15px;
+    right: 25px;
+    transform: rotate(-20deg);
+    border: 3px solid #365c13;
+}
 
         .click-text {
             margin-top: 15px;
@@ -282,9 +318,11 @@
 
             <div class="fruit-area">
 
-                <button class="fruit" id="fruitButton" aria-label="Peel orange">
-                    🍊
-                </button>
+            <button class="fruit" id="fruitButton" aria-label="Peel orange">
+                <div class="orange">
+                    <div class="orange-leaf"></div>
+                </div>
+            </button>
 
                 <div class="click-text">
                     CLICK THE FRUIT TO PEEL
