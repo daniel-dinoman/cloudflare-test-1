@@ -56,12 +56,28 @@ const recipes = [
         result: "Orange Strip"
     },
 
-        {
+    {
         ingredients: [
             "Orange Strip",
             "Orange Strip"
         ],
         result: "Orange Pebble"
+    },
+
+    {
+        ingredients: [
+            "Orange Pebble",
+            "Orange Pebble"
+        ],
+        result: "Orange Atom"
+    },
+
+    {
+        ingredients: [
+            "Orange Atom",
+            "Orange Atom"
+        ],
+        result: "Orange Nothing"
     },
 
     {
