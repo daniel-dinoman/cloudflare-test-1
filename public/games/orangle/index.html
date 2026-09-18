@@ -1,0 +1,395 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Orangle: CHAOS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background-color: #17120d;
+            color: #fff4df;
+
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* BACK BUTTON */
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+
+            padding: 12px 20px;
+
+            background-color: #f47c00;
+            color: white;
+
+            border: 3px solid #ffad32;
+            border-radius: 10px;
+
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+
+            box-shadow: 0 4px 0 #8a4200;
+
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+
+        .back-button:hover {
+            background-color: #ff8c0a;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 0 #8a4200;
+        }
+
+        .back-button:active {
+            transform: translateY(3px);
+
+            box-shadow: 0 1px 0 #8a4200;
+        }
+
+
+        /* TITLE */
+
+        h1 {
+            margin-top: 55px;
+            margin-bottom: 5px;
+
+            font-size: 48px;
+
+            color: #ff9d18;
+
+            text-shadow: 3px 3px 0 #7a3d00;
+        }
+
+        .subtitle {
+            margin-bottom: 20px;
+
+            color: #d9b98c;
+
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+
+        /* CHAOS STATUS */
+
+        .chaos-box {
+            margin-bottom: 20px;
+
+            padding: 10px 18px;
+
+            background-color: #241a11;
+
+            border: 3px solid #a85400;
+            border-radius: 10px;
+
+            color: #ff9d18;
+
+            font-weight: bold;
+        }
+
+
+        /* GAME BOARD */
+
+        .board {
+            display: grid;
+
+            grid-template-columns: repeat(5, 62px);
+            grid-template-rows: repeat(6, 62px);
+
+            gap: 7px;
+
+            margin-bottom: 25px;
+        }
+
+        .tile {
+            width: 62px;
+            height: 62px;
+
+            background-color: #241a11;
+
+            border: 3px solid #6f4a28;
+            border-radius: 6px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+            font-weight: bold;
+
+            color: white;
+        }
+
+        .tile.correct {
+            background-color: #d86b00;
+            border-color: #ffad32;
+        }
+
+        .tile.present {
+            background-color: #a85c00;
+            border-color: #d99532;
+        }
+
+        .tile.wrong {
+            background-color: #4a3320;
+            border-color: #5e452e;
+        }
+
+
+        /* KEYBOARD */
+
+        .keyboard {
+            width: min(500px, 95vw);
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .keyboard-row {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 5px;
+        }
+
+        .key {
+            min-width: 38px;
+            height: 52px;
+
+            padding: 0 8px;
+
+            background-color: #3a291b;
+            color: #fff4df;
+
+            border: 2px solid #6f4a28;
+            border-radius: 6px;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow: 0 3px 0 #1c1209;
+
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        .key:hover {
+            background-color: #5a391c;
+        }
+
+        .key:active {
+            transform: translateY(3px);
+
+            box-shadow: 0 0 0 #1c1209;
+        }
+
+        .key.wide {
+            min-width: 65px;
+        }
+
+
+        /* MESSAGE */
+
+        #message {
+            min-height: 25px;
+
+            margin-top: 18px;
+
+            color: #ffb84d;
+
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 38px;
+            }
+
+            .board {
+                grid-template-columns: repeat(5, 55px);
+                grid-template-rows: repeat(6, 55px);
+            }
+
+            .tile {
+                width: 55px;
+                height: 55px;
+
+                font-size: 26px;
+            }
+
+            .key {
+                min-width: 30px;
+                height: 48px;
+
+                padding: 0 5px;
+
+                font-size: 14px;
+            }
+
+            .key.wide {
+                min-width: 55px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BACK BUTTON -->
+
+    <a class="back-button" href="/games/">
+        ← Back
+    </a>
+
+
+    <!-- TITLE -->
+
+    <h1>ORANGLE: CHAOS</h1>
+
+    <div class="subtitle">
+        Guess the word. Survive the chaos.
+    </div>
+
+
+    <!-- CHAOS STATUS -->
+
+    <div class="chaos-box">
+        CHAOS: <span id="chaos-status">READY</span>
+    </div>
+
+
+    <!-- GAME BOARD -->
+
+    <div class="board" id="board">
+
+        <!-- Row 1 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+        <!-- Row 2 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+        <!-- Row 3 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+        <!-- Row 4 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+        <!-- Row 5 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+        <!-- Row 6 -->
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+
+    </div>
+
+
+    <!-- KEYBOARD -->
+
+    <div class="keyboard">
+
+        <div class="keyboard-row">
+            <button class="key" data-key="Q">Q</button>
+            <button class="key" data-key="W">W</button>
+            <button class="key" data-key="E">E</button>
+            <button class="key" data-key="R">R</button>
+            <button class="key" data-key="T">T</button>
+            <button class="key" data-key="Y">Y</button>
+            <button class="key" data-key="U">U</button>
+            <button class="key" data-key="I">I</button>
+            <button class="key" data-key="O">O</button>
+            <button class="key" data-key="P">P</button>
+        </div>
+
+        <div class="keyboard-row">
+            <button class="key" data-key="A">A</button>
+            <button class="key" data-key="S">S</button>
+            <button class="key" data-key="D">D</button>
+            <button class="key" data-key="F">F</button>
+            <button class="key" data-key="G">G</button>
+            <button class="key" data-key="H">H</button>
+            <button class="key" data-key="J">J</button>
+            <button class="key" data-key="K">K</button>
+            <button class="key" data-key="L">L</button>
+        </div>
+
+        <div class="keyboard-row">
+            <button class="key wide" data-key="ENTER">ENTER</button>
+
+            <button class="key" data-key="Z">Z</button>
+            <button class="key" data-key="X">X</button>
+            <button class="key" data-key="C">C</button>
+            <button class="key" data-key="V">V</button>
+            <button class="key" data-key="B">B</button>
+            <button class="key" data-key="N">N</button>
+            <button class="key" data-key="M">M</button>
+
+            <button class="key wide" data-key="BACKSPACE">
+                ←
+            </button>
+        </div>
+
+    </div>
+
+
+    <!-- GAME MESSAGE -->
+
+    <div id="message"></div>
+
+
+    <!-- GAME JAVASCRIPT -->
+
+    <script src="game.js"></script>
+
+</body>
+</html>
+```
