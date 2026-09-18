@@ -26,11 +26,11 @@ let selectedItems = [null, null, null];
 const orangeDrops = [
     {
         name: "Orange Peel",
-        chance: 50
+        chance: 40
     },
     {
         name: "Orange Seed",
-        chance: 25
+        chance: 20
     },
     {
         name: "Orange Juice",
@@ -39,6 +39,10 @@ const orangeDrops = [
     {
         name: "Golden Orange Peel",
         chance: 5
+    },
+    {
+        name: "EVIL Orange Peel",
+        chance: 15
     }
 ];
 
@@ -58,10 +62,44 @@ const recipes = [
 
     {
         ingredients: [
+            "EVIL Orange Peel",
+            "EVIL Orange Peel"
+        ],
+        result: "EVIL Orange Strip"
+    },
+
+    {
+        ingredients: [
+            "Orange Peel",
+            "Golden Orange Peel",
+            "Orange Peel"
+        ],
+        result: "Orange Peel Fusion"
+    },
+
+    {
+        ingredients: [
+            "EVIL Orange Peel",
+            "Golden Orange Peel",
+            "EVIL Orange Peel"
+        ],
+        result: "EVIL Orange Peel Fusion"
+    },
+
+    {
+        ingredients: [
             "Orange Strip",
             "Orange Strip"
         ],
         result: "Orange Pebble"
+    },
+
+    {
+        ingredients: [
+            "EVIL Orange Strip",
+            "EVIL Orange Strip"
+        ],
+        result: "EVIL Orange Pebble"
     },
 
     {
@@ -74,10 +112,26 @@ const recipes = [
 
     {
         ingredients: [
+            "EVIL Orange Pebble",
+            "EVIL Orange Pebble"
+        ],
+        result: "EVIL Orange Atom"
+    },
+
+    {
+        ingredients: [
             "Orange Atom",
             "Orange Atom"
         ],
         result: "Orange Nothing"
+    },
+
+    {
+        ingredients: [
+            "EVIL Orange Atom",
+            "EVIL Orange Atom"
+        ],
+        result: "EVIL Orange Nothing"
     },
 
     {
