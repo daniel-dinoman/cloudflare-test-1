@@ -90,6 +90,11 @@ const randomReactions = [
     "moving on...",
     "what",
     "👍",
+    "yea bro im sending this to daniel_dinoman",
+    "the critics gonna hate this one",
+    "who is writing these?",
+    "these aren't random btw.",
+    "try \"peels\".",
     "orange"
 ];
 
