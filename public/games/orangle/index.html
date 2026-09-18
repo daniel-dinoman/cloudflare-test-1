@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Orangle</title>
 
     <style>
@@ -14,245 +13,183 @@
         body {
             margin: 0;
             min-height: 100vh;
-
-            background-color: #17120d;
-            color: #fff4df;
-
-            font-family: Arial, sans-serif;
-
+            background: #24150d;
+            color: #fff3df;
+            font-family: Arial, Helvetica, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
-        /* BACK BUTTON */
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-
-            padding: 12px 20px;
-
-            background-color: #f47c00;
-            color: white;
-
-            border: 3px solid #ffad32;
-            border-radius: 10px;
-
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-
-            box-shadow: 0 4px 0 #8a4200;
-
-            transition: transform 0.12s, box-shadow 0.12s;
+        .game {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
         }
-
-        .back-button:hover {
-            background-color: #ff8c0a;
-
-            transform: translateY(-2px);
-
-            box-shadow: 0 6px 0 #8a4200;
-        }
-
-        .back-button:active {
-            transform: translateY(3px);
-
-            box-shadow: 0 1px 0 #8a4200;
-        }
-
-
-        /* TITLE */
 
         h1 {
-            margin-top: 55px;
-            margin-bottom: 5px;
-
-            font-size: 48px;
-
-            color: #ff9d18;
-
-            text-shadow: 3px 3px 0 #7a3d00;
+            margin: 0;
+            color: #ff8c00;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 2px;
         }
 
         .subtitle {
-            margin-bottom: 20px;
-
-            color: #d9b98c;
-
-            font-size: 17px;
-            font-weight: bold;
+            margin-top: 5px;
+            margin-bottom: 18px;
+            color: #d9b892;
+            font-size: 15px;
         }
 
-
-        /* CHAOS STATUS */
-
-        .chaos-box {
+        #board {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
             margin-bottom: 20px;
-
-            padding: 10px 18px;
-
-            background-color: #241a11;
-
-            border: 3px solid #a85400;
-            border-radius: 10px;
-
-            color: #ff9d18;
-
-            font-weight: bold;
         }
 
-
-        /* GAME BOARD */
-
-        .board {
-            display: grid;
-
-            grid-template-columns: repeat(5, 62px);
-            grid-template-rows: repeat(6, 62px);
-
-            gap: 7px;
-
-            margin-bottom: 25px;
+        .row {
+            display: flex;
+            gap: 6px;
         }
 
         .tile {
-            width: 62px;
-            height: 62px;
-
-            background-color: #241a11;
-
-            border: 3px solid #6f4a28;
-            border-radius: 6px;
-
+            width: 58px;
+            height: 58px;
+            border: 2px solid #704326;
+            background: #2e1b10;
             display: flex;
-            align-items: center;
             justify-content: center;
-
+            align-items: center;
             font-size: 30px;
-            font-weight: bold;
-
+            font-weight: 900;
             color: white;
+            text-transform: uppercase;
+            border-radius: 5px;
         }
 
         .tile.correct {
-            background-color: #d86b00;
-            border-color: #ffad32;
+            background: #e87500;
+            border-color: #ff9d25;
         }
 
-        .tile.present {
-            background-color: #a85c00;
-            border-color: #d99532;
+        .tile.wrong-place {
+            background: #8a641e;
+            border-color: #c79a3b;
         }
 
         .tile.wrong {
-            background-color: #4a3320;
-            border-color: #5e452e;
+            background: #4a3427;
+            border-color: #5d4434;
         }
 
-
-        /* KEYBOARD */
-
-        .keyboard {
-            width: min(500px, 95vw);
-
+        #keyboard {
             display: flex;
             flex-direction: column;
-
-            gap: 7px;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
         }
 
         .keyboard-row {
             display: flex;
-
-            justify-content: center;
-
             gap: 5px;
+            justify-content: center;
         }
 
         .key {
             min-width: 38px;
-            height: 52px;
-
+            height: 48px;
             padding: 0 8px;
-
-            background-color: #3a291b;
-            color: #fff4df;
-
-            border: 2px solid #6f4a28;
-            border-radius: 6px;
-
-            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #704326;
+            color: white;
+            font-size: 14px;
             font-weight: bold;
-
             cursor: pointer;
-
-            box-shadow: 0 3px 0 #1c1209;
-
-            transition: transform 0.1s, background-color 0.1s;
         }
 
         .key:hover {
-            background-color: #5a391c;
+            background: #8c542d;
         }
 
         .key:active {
-            transform: translateY(3px);
-
-            box-shadow: 0 0 0 #1c1209;
+            transform: scale(0.95);
         }
 
         .key.wide {
-            min-width: 65px;
+            min-width: 62px;
         }
 
+        .key.correct {
+            background: #e87500;
+        }
 
-        /* MESSAGE */
+        .key.wrong-place {
+            background: #8a641e;
+        }
+
+        .key.wrong {
+            background: #3c3029;
+            color: #8d8178;
+        }
 
         #message {
-            min-height: 25px;
-
-            margin-top: 18px;
-
-            color: #ffb84d;
-
-            font-size: 18px;
+            min-height: 28px;
+            margin-top: 15px;
+            color: #ffae42;
             font-weight: bold;
+            font-size: 16px;
         }
 
+        .back-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #e87500;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+            border: 2px solid #ff9d25;
+        }
 
-        /* MOBILE */
+        .back-button:hover {
+            background: #ff8c00;
+        }
 
         @media (max-width: 500px) {
-            h1 {
-                font-size: 38px;
+            .game {
+                padding: 12px;
             }
 
-            .board {
-                grid-template-columns: repeat(5, 55px);
-                grid-template-rows: repeat(6, 55px);
+            h1 {
+                font-size: 32px;
             }
 
             .tile {
-                width: 55px;
-                height: 55px;
-
-                font-size: 26px;
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
             }
 
             .key {
                 min-width: 30px;
-                height: 48px;
-
+                height: 44px;
                 padding: 0 5px;
-
-                font-size: 14px;
+                font-size: 12px;
             }
 
             .key.wide {
-                min-width: 55px;
+                min-width: 52px;
+            }
+
+            .keyboard-row {
+                gap: 3px;
             }
         }
     </style>
@@ -260,132 +197,25 @@
 
 <body>
 
-    <!-- BACK BUTTON -->
+    <div class="game">
 
-    <a class="back-button" href="/games/">
-        ← Back
-    </a>
+        <h1>Orangle</h1>
 
-
-    <!-- TITLE -->
-
-    <h1>ORANGLE</h1>
-
-    <div class="subtitle">
-        Guess the word, or try to.
-    </div>
-
-
-    <!-- CHAOS STATUS -->
-
-    <div class="chaos-box">
-        Oranges <span id="chaos-status">GREAT (as always)</span>
-    </div>
-
-
-    <!-- GAME BOARD -->
-
-    <div class="board" id="board">
-
-        <!-- Row 1 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-        <!-- Row 2 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-        <!-- Row 3 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-        <!-- Row 4 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-        <!-- Row 5 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-        <!-- Row 6 -->
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-
-    </div>
-
-
-    <!-- KEYBOARD -->
-
-    <div class="keyboard">
-
-        <div class="keyboard-row">
-            <button class="key" data-key="Q">Q</button>
-            <button class="key" data-key="W">W</button>
-            <button class="key" data-key="E">E</button>
-            <button class="key" data-key="R">R</button>
-            <button class="key" data-key="T">T</button>
-            <button class="key" data-key="Y">Y</button>
-            <button class="key" data-key="U">U</button>
-            <button class="key" data-key="I">I</button>
-            <button class="key" data-key="O">O</button>
-            <button class="key" data-key="P">P</button>
+        <div class="subtitle">
+            oranges and peels lol
         </div>
 
-        <div class="keyboard-row">
-            <button class="key" data-key="A">A</button>
-            <button class="key" data-key="S">S</button>
-            <button class="key" data-key="D">D</button>
-            <button class="key" data-key="F">F</button>
-            <button class="key" data-key="G">G</button>
-            <button class="key" data-key="H">H</button>
-            <button class="key" data-key="J">J</button>
-            <button class="key" data-key="K">K</button>
-            <button class="key" data-key="L">L</button>
-        </div>
+        <div id="board"></div>
 
-        <div class="keyboard-row">
-            <button class="key wide" data-key="ENTER">ENTER</button>
+        <div id="keyboard"></div>
 
-            <button class="key" data-key="Z">Z</button>
-            <button class="key" data-key="X">X</button>
-            <button class="key" data-key="C">C</button>
-            <button class="key" data-key="V">V</button>
-            <button class="key" data-key="B">B</button>
-            <button class="key" data-key="N">N</button>
-            <button class="key" data-key="M">M</button>
+        <div id="message"></div>
 
-            <button class="key wide" data-key="BACKSPACE">
-                ←
-            </button>
-        </div>
+        <a class="back-button" href="/games/">
+            ← BACK TO GAMES
+        </a>
 
     </div>
-
-
-    <!-- GAME MESSAGE -->
-
-    <div id="message"></div>
-
-
-    <!-- GAME JAVASCRIPT -->
 
     <script src="game.js"></script>
 
