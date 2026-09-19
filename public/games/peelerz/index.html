@@ -10,6 +10,30 @@
         * {
             box-sizing: border-box;
         }
+
+        .reset-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+        
+            padding: 10px 16px;
+        
+            background: #5a2410;
+            color: #fff3dc;
+        
+            border: 2px solid #c76b12;
+            border-radius: 7px;
+        
+            font-weight: bold;
+            cursor: pointer;
+        
+            z-index: 1000;
+        }
+        
+        .reset-button:hover {
+            background: #7a3012;
+        }
+        
         .inventory-title {
             color: #f28c18;
             font-size: 18px;
@@ -514,6 +538,9 @@
 </head>
 
 <body>
+    <button class="reset-button" id="resetSave">
+        🗑️ RESET SAVE
+    </button>
     <a class="back-button" href="/games/">
         ← BACK TO GAMES
     </a>
