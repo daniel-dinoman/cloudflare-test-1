@@ -36,6 +36,12 @@ const clickText = document.getElementById("clickText");
 // UPGRADE DATA
 // ==========================================
 
+// Cookie Clicker-style scaling.
+//
+// Every purchase multiplies the next cost by 1.15.
+
+const COST_MULTIPLIER = 1.15;
+
 const upgradeData = {
     peel: {
         cost: 15,
@@ -86,23 +92,53 @@ const upgradeData = {
 // ==========================================
 
 function formatNumber(number) {
+
     if (number < 1000) {
         return Math.floor(number).toLocaleString();
     }
 
     if (number < 1000000) {
-        return (number / 1000).toFixed(1).replace(".0", "") + "K";
+        return (number / 1000)
+            .toFixed(1)
+            .replace(".0", "") + "K";
     }
 
     if (number < 1000000000) {
-        return (number / 1000000).toFixed(1).replace(".0", "") + "M";
+        return (number / 1000000)
+            .toFixed(1)
+            .replace(".0", "") + "M";
     }
 
     if (number < 1000000000000) {
-        return (number / 1000000000).toFixed(1).replace(".0", "") + "B";
+        return (number / 1000000000)
+            .toFixed(1)
+            .replace(".0", "") + "B";
     }
 
-    return (number / 1000000000000).toFixed(1).replace(".0", "") + "T";
+    if (number < 1000000000000000) {
+        return (number / 1000000000000)
+            .toFixed(1)
+            .replace(".0", "") + "T";
+    }
+
+    return number.toExponential(2);
+}
+
+
+// ==========================================
+// GET CURRENT UPGRADE COST
+// ==========================================
+
+function getUpgradeCost(type) {
+
+    const upgrade = upgradeData[type];
+
+    const amountOwned = upgrades[type];
+
+    return Math.floor(
+        upgrade.cost *
+        Math.pow(COST_MULTIPLIER, amountOwned)
+    );
 }
 
 
@@ -120,9 +156,13 @@ function calculateStats() {
 
         const data = upgradeData[type];
 
-        perClick += upgrades[type] * data.click;
+        perClick +=
+            upgrades[type] *
+            data.click;
 
-        orangesPerSecond += upgrades[type] * data.passive;
+        orangesPerSecond +=
+            upgrades[type] *
+            data.passive;
     }
 }
 
@@ -135,7 +175,8 @@ function updateDisplay() {
 
     calculateStats();
 
-    orangeCount.textContent = formatNumber(oranges);
+    orangeCount.textContent =
+        formatNumber(oranges);
 
     perSecond.textContent =
         formatNumber(orangesPerSecond) +
@@ -153,29 +194,29 @@ function updateDisplay() {
         totalUpgrades += upgrades[type];
     }
 
-    upgradeCount.textContent = totalUpgrades;
+    upgradeCount.textContent =
+        totalUpgrades;
 
     updateShop();
 }
 
 
 // ==========================================
-// ORANGE CLICK
+// CLICK ORANGE
 // ==========================================
 
 orangeButton.addEventListener("click", function(event) {
 
-    // Give the player oranges
     oranges += perClick;
 
-    // Track total oranges earned
     totalOranges += perClick;
 
-    // Update the number on screen
     updateDisplay();
 
-    // Show popup
-    showClickText(perClick, event);
+    showClickText(
+        perClick,
+        event
+    );
 });
 
 
@@ -186,7 +227,9 @@ orangeButton.addEventListener("click", function(event) {
 function showClickText(amount, event) {
 
     clickText.textContent =
-        "+" + formatNumber(amount) + " 🍊";
+        "+" +
+        formatNumber(amount) +
+        " 🍊";
 
     clickText.style.left =
         event.clientX + "px";
@@ -196,7 +239,6 @@ function showClickText(amount, event) {
 
     clickText.classList.remove("pop");
 
-    // Force animation restart
     void clickText.offsetWidth;
 
     clickText.classList.add("pop");
@@ -204,69 +246,102 @@ function showClickText(amount, event) {
 
 
 // ==========================================
-// SHOP
+// SHOP BUTTONS
 // ==========================================
 
 const buttons = {
-    peel: document.getElementById("upgradePeel"),
-    juice: document.getElementById("upgradeJuice"),
-    tree: document.getElementById("upgradeTree"),
-    grandma: document.getElementById("upgradeGrandma"),
-    factory: document.getElementById("upgradeFactory"),
-    government: document.getElementById("upgradeGovernment"),
-    dimension: document.getElementById("upgradeDimension")
+
+    peel:
+        document.getElementById("upgradePeel"),
+
+    juice:
+        document.getElementById("upgradeJuice"),
+
+    tree:
+        document.getElementById("upgradeTree"),
+
+    grandma:
+        document.getElementById("upgradeGrandma"),
+
+    factory:
+        document.getElementById("upgradeFactory"),
+
+    government:
+        document.getElementById("upgradeGovernment"),
+
+    dimension:
+        document.getElementById("upgradeDimension")
 };
 
 
+// ==========================================
+// BUY UPGRADES
+// ==========================================
+
 for (const type in buttons) {
 
-    buttons[type].addEventListener("click", function() {
+    buttons[type].addEventListener(
+        "click",
+        function() {
 
-        const upgrade = upgradeData[type];
+            const cost =
+                getUpgradeCost(type);
 
-        if (oranges < upgrade.cost) {
-            return;
+            // Not enough oranges
+            if (oranges < cost) {
+                return;
+            }
+
+            // Pay for upgrade
+            oranges -= cost;
+
+            // Increase amount owned
+            upgrades[type]++;
+
+            // Update everything
+            updateDisplay();
+
+            // Save immediately
+            saveGame();
         }
-
-        oranges -= upgrade.cost;
-
-        upgrades[type]++;
-
-        updateDisplay();
-
-        saveGame();
-    });
+    );
 }
 
 
 // ==========================================
-// UPDATE SHOP BUTTONS
+// UPDATE SHOP
 // ==========================================
 
 function updateShop() {
 
     for (const type in buttons) {
 
-        const button = buttons[type];
+        const button =
+            buttons[type];
 
-        const upgrade = upgradeData[type];
+        const cost =
+            getUpgradeCost(type);
 
+        // Disable if too expensive
         button.disabled =
-            oranges < upgrade.cost;
+            oranges < cost;
 
+        // Update displayed cost
         const costText =
-            button.querySelector(".upgrade-cost");
+            button.querySelector(
+                ".upgrade-cost"
+            );
 
         costText.textContent =
             "Cost: " +
-            formatNumber(upgrade.cost) +
+            formatNumber(cost) +
             " 🍊";
     }
 }
 
 
 // ==========================================
-// PASSIVE ORANGES
+// PASSIVE PRODUCTION
 // ==========================================
 
 // Runs 10 times per second.
@@ -290,16 +365,24 @@ setInterval(function() {
 
 
 // ==========================================
-// SAVE
+// SAVE GAME
 // ==========================================
 
 function saveGame() {
 
     const saveData = {
-        oranges: oranges,
-        totalOranges: totalOranges,
-        upgrades: upgrades,
-        lastSave: Date.now()
+
+        oranges:
+            oranges,
+
+        totalOranges:
+            totalOranges,
+
+        upgrades:
+            upgrades,
+
+        lastSave:
+            Date.now()
     };
 
     localStorage.setItem(
@@ -310,16 +393,20 @@ function saveGame() {
 
 
 // ==========================================
-// LOAD
+// LOAD GAME
 // ==========================================
 
 function loadGame() {
 
     const saved =
-        localStorage.getItem("orangeClickerSave");
+        localStorage.getItem(
+            "orangeClickerSave"
+        );
 
     if (!saved) {
+
         updateDisplay();
+
         return;
     }
 
@@ -339,30 +426,43 @@ function loadGame() {
             for (const type in upgrades) {
 
                 upgrades[type] =
-                    Number(data.upgrades[type]) || 0;
+                    Number(
+                        data.upgrades[type]
+                    ) || 0;
             }
         }
 
+        // Calculate production before
+        // calculating offline earnings.
+
         calculateStats();
 
-        // Offline production
+        // ======================================
+        // OFFLINE PRODUCTION
+        // ======================================
 
         if (data.lastSave) {
 
             const secondsAway =
-                (Date.now() - data.lastSave) / 1000;
+                (Date.now() -
+                    data.lastSave) / 1000;
 
-            // Maximum 8 hours of offline production
+            // Maximum 8 hours offline
             const offlineSeconds =
-                Math.min(secondsAway, 60 * 60 * 8);
+                Math.min(
+                    secondsAway,
+                    60 * 60 * 8
+                );
 
             const offlineOranges =
                 orangesPerSecond *
                 offlineSeconds;
 
-            oranges += offlineOranges;
+            oranges +=
+                offlineOranges;
 
-            totalOranges += offlineOranges;
+            totalOranges +=
+                offlineOranges;
         }
 
         updateDisplay();
@@ -370,7 +470,7 @@ function loadGame() {
     } catch (error) {
 
         console.error(
-            "Orange Clicker save is corrupted:",
+            "Could not load save:",
             error
         );
 
@@ -379,6 +479,7 @@ function loadGame() {
         );
 
         oranges = 0;
+
         totalOranges = 0;
 
         for (const type in upgrades) {
@@ -394,8 +495,12 @@ function loadGame() {
 // AUTO SAVE
 // ==========================================
 
+// Save every 5 seconds.
+
 setInterval(function() {
+
     saveGame();
+
 }, 5000);
 
 
@@ -410,9 +515,11 @@ window.addEventListener(
 
 
 // ==========================================
-// START
+// START GAME
 // ==========================================
 
 loadGame();
 
-console.log("🍊 Orange Clicker loaded!");
+console.log(
+    "🍊 Orange Clicker loaded!"
+);
