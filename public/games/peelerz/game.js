@@ -24,6 +24,63 @@ let selectedItems = [null, null, null];
 
 
 // ==============================
+// SAVE DATA
+// ==============================
+
+const SAVE_KEY = "peelerzSave";
+
+function saveGame() {
+
+    const saveData = {
+        inventory: inventory,
+        currentFruitIndex: currentFruitIndex
+    };
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+}
+
+function loadGame() {
+
+    const savedData = localStorage.getItem(SAVE_KEY);
+
+    if (!savedData) {
+        return;
+    }
+
+    try {
+
+        const data = JSON.parse(savedData);
+
+        if (
+            data.inventory &&
+            typeof data.inventory === "object"
+        ) {
+            inventory = data.inventory;
+        }
+
+        if (
+            typeof data.currentFruitIndex === "number" &&
+            data.currentFruitIndex >= 0 &&
+            data.currentFruitIndex < fruits.length
+        ) {
+            currentFruitIndex = data.currentFruitIndex;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load Peelerz save:",
+            error
+        );
+
+    }
+}
+
+
+// ==============================
 // FRUITS
 // ==============================
 
@@ -41,26 +98,32 @@ let currentFruitIndex = 0;
 // ==============================
 
 const orangeDrops = [
+
     {
         name: "Orange Peel",
         chance: 40
     },
+
     {
         name: "Orange Seed",
         chance: 20
     },
+
     {
         name: "Orange Juice",
         chance: 20
     },
+
     {
         name: "Golden Orange Peel",
         chance: 5
     },
+
     {
         name: "EVIL Orange Peel",
         chance: 15
     }
+
 ];
 
 
@@ -69,26 +132,32 @@ const orangeDrops = [
 // ==============================
 
 const potatoDrops = [
+
     {
         name: "Potato Peel",
         chance: 45
     },
+
     {
         name: "Potato",
         chance: 30
     },
+
     {
         name: "Potato Sprout",
         chance: 15
     },
+
     {
         name: "Golden Potato Peel",
         chance: 5
     },
+
     {
         name: "EVIL Potato Peel",
         chance: 5
     }
+
 ];
 
 
@@ -97,26 +166,32 @@ const potatoDrops = [
 // ==============================
 
 const bananaDrops = [
+
     {
         name: "Banana Peel",
         chance: 45
     },
+
     {
         name: "Banana",
         chance: 30
     },
+
     {
         name: "Banana Seed",
         chance: 15
     },
+
     {
         name: "Golden Banana Peel",
         chance: 5
     },
+
     {
         name: "EVIL Banana Peel",
         chance: 5
     }
+
 ];
 
 
@@ -444,6 +519,7 @@ const recipes = [
         ],
         result: "FRUIT POTATO"
     }
+
 ];
 
 
@@ -452,7 +528,9 @@ const recipes = [
 // ==============================
 
 function getCurrentFruit() {
+
     return fruits[currentFruitIndex];
+
 }
 
 
@@ -475,6 +553,7 @@ function getCurrentDrops() {
     if (fruit === "banana") {
         return bananaDrops;
     }
+
 }
 
 
@@ -486,7 +565,8 @@ function getRandomDrop() {
 
     const drops = getCurrentDrops();
 
-    const random = Math.random() * 100;
+    const random =
+        Math.random() * 100;
 
     let total = 0;
 
@@ -495,11 +575,15 @@ function getRandomDrop() {
         total += drop.chance;
 
         if (random < total) {
+
             return drop.name;
+
         }
+
     }
 
     return drops[0].name;
+
 }
 
 
@@ -523,6 +607,7 @@ function peelFruit() {
         fruitButton.classList.remove("peeling");
 
     }, 300);
+
 }
 
 
@@ -544,6 +629,7 @@ function updateFruit() {
 
 
     // Remove old fruit
+
     fruitButton.innerHTML = "";
 
 
@@ -553,17 +639,20 @@ function updateFruit() {
 
     if (fruit === "orange") {
 
-        const orange = document.createElement("div");
+        const orange =
+            document.createElement("div");
 
         orange.className = "orange";
 
-        const leaf = document.createElement("div");
+        const leaf =
+            document.createElement("div");
 
         leaf.className = "orange-leaf";
 
         orange.appendChild(leaf);
 
         fruitButton.appendChild(orange);
+
     }
 
 
@@ -573,11 +662,13 @@ function updateFruit() {
 
     if (fruit === "potato") {
 
-        const potato = document.createElement("div");
+        const potato =
+            document.createElement("div");
 
         potato.className = "potato";
 
         fruitButton.appendChild(potato);
+
     }
 
 
@@ -587,12 +678,15 @@ function updateFruit() {
 
     if (fruit === "banana") {
 
-        const banana = document.createElement("div");
+        const banana =
+            document.createElement("div");
 
         banana.className = "banana";
 
         fruitButton.appendChild(banana);
+
     }
+
 }
 
 
@@ -600,38 +694,58 @@ function updateFruit() {
 // PREVIOUS FRUIT
 // ==============================
 
-previousFruit.addEventListener("click", () => {
+previousFruit.addEventListener(
+    "click",
+    () => {
 
-    currentFruitIndex--;
+        currentFruitIndex--;
 
-    if (currentFruitIndex < 0) {
-        currentFruitIndex = fruits.length - 1;
+        if (currentFruitIndex < 0) {
+
+            currentFruitIndex =
+                fruits.length - 1;
+
+        }
+
+        updateFruit();
+
+        result.textContent =
+            `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
+
+        saveGame();
+
     }
-
-    updateFruit();
-
-    result.textContent =
-        `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
-});
+);
 
 
 // ==============================
 // NEXT FRUIT
 // ==============================
 
-nextFruit.addEventListener("click", () => {
+nextFruit.addEventListener(
+    "click",
+    () => {
 
-    currentFruitIndex++;
+        currentFruitIndex++;
 
-    if (currentFruitIndex >= fruits.length) {
-        currentFruitIndex = 0;
+        if (
+            currentFruitIndex >=
+            fruits.length
+        ) {
+
+            currentFruitIndex = 0;
+
+        }
+
+        updateFruit();
+
+        result.textContent =
+            `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
+
+        saveGame();
+
     }
-
-    updateFruit();
-
-    result.textContent =
-        `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
-});
+);
 
 
 // ==============================
@@ -644,6 +758,9 @@ function addItem(item) {
         (inventory[item] || 0) + 1;
 
     updateInventory();
+
+    saveGame();
+
 }
 
 
@@ -656,10 +773,15 @@ function removeItem(item) {
     inventory[item]--;
 
     if (inventory[item] <= 0) {
+
         delete inventory[item];
+
     }
 
     updateInventory();
+
+    saveGame();
+
 }
 
 
@@ -667,38 +789,51 @@ function updateInventory() {
 
     inventoryElement.innerHTML = "";
 
-    const items = Object.keys(inventory);
+    const items =
+        Object.keys(inventory);
 
     if (items.length === 0) {
 
-        const empty = document.createElement("div");
+        const empty =
+            document.createElement("div");
 
-        empty.className = "empty-inventory";
-        empty.textContent = "Nothing here yet!";
+        empty.className =
+            "empty-inventory";
+
+        empty.textContent =
+            "Nothing here yet!";
 
         inventoryElement.appendChild(empty);
 
         return;
+
     }
 
 
     for (const item of items) {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
-        button.className = "inventory-item";
+        button.className =
+            "inventory-item";
 
         button.textContent =
             `${item} ×${inventory[item]}`;
 
-        button.addEventListener("click", () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-            addToCrafting(item);
+                addToCrafting(item);
 
-        });
+            }
+        );
 
         inventoryElement.appendChild(button);
+
     }
+
 }
 
 
@@ -717,29 +852,39 @@ function addToCrafting(item) {
             "ALL 3 SLOTS ARE FULL!";
 
         return;
+
     }
 
     if (!inventory[item]) {
         return;
     }
 
-    selectedItems[emptySlot] = item;
+    selectedItems[emptySlot] =
+        item;
 
     removeItem(item);
 
     updateCraftSlots();
+
 }
 
+
+// ==============================
+// UPDATE CRAFT SLOTS
+// ==============================
 
 function updateCraftSlots() {
 
     for (let i = 0; i < 3; i++) {
 
-        const slot = craftSlots[i];
+        const slot =
+            craftSlots[i];
 
         slot.textContent =
             selectedItems[i] || "";
+
     }
+
 }
 
 
@@ -747,24 +892,32 @@ function updateCraftSlots() {
 // REMOVE FROM CRAFTING SLOT
 // ==============================
 
-craftSlots.forEach((slot, index) => {
+craftSlots.forEach(
+    (slot, index) => {
 
-    slot.addEventListener("click", () => {
+        slot.addEventListener(
+            "click",
+            () => {
 
-        const item = selectedItems[index];
+                const item =
+                    selectedItems[index];
 
-        if (!item) {
-            return;
-        }
+                if (!item) {
+                    return;
+                }
 
-        addItem(item);
+                addItem(item);
 
-        selectedItems[index] = null;
+                selectedItems[index] =
+                    null;
 
-        updateCraftSlots();
-    });
+                updateCraftSlots();
 
-});
+            }
+        );
+
+    }
+);
 
 
 // ==============================
@@ -773,22 +926,28 @@ craftSlots.forEach((slot, index) => {
 
 function findRecipe() {
 
-    const ingredients = selectedItems
-        .filter(item => item !== null)
-        .sort();
+    const ingredients =
+        selectedItems
+            .filter(
+                item => item !== null
+            )
+            .sort();
 
     if (ingredients.length === 0) {
+
         return null;
+
     }
 
     for (const recipe of recipes) {
 
         const recipeIngredients =
-            [...recipe.ingredients].sort();
+            [...recipe.ingredients]
+                .sort();
 
         if (
             ingredients.length ===
-                recipeIngredients.length &&
+            recipeIngredients.length &&
 
             ingredients.every(
                 (item, index) =>
@@ -796,11 +955,15 @@ function findRecipe() {
                     recipeIngredients[index]
             )
         ) {
+
             return recipe;
+
         }
+
     }
 
     return null;
+
 }
 
 
@@ -810,7 +973,8 @@ function findRecipe() {
 
 function craft() {
 
-    const recipe = findRecipe();
+    const recipe =
+        findRecipe();
 
     if (!recipe) {
 
@@ -818,6 +982,7 @@ function craft() {
             "THAT DOESN'T MAKE ANYTHING!";
 
         return;
+
     }
 
     addItem(recipe.result);
@@ -832,6 +997,7 @@ function craft() {
 
     result.textContent =
         `CRAFTED: ${recipe.result}!`;
+
 }
 
 
@@ -839,21 +1005,27 @@ function craft() {
 // CRAFTING MENU
 // ==============================
 
-craftButton.addEventListener("click", () => {
+craftButton.addEventListener(
+    "click",
+    () => {
 
-    craftMenu.classList.add("open");
+        craftMenu.classList.add("open");
 
-    updateInventory();
-    updateCraftSlots();
+        updateInventory();
+        updateCraftSlots();
 
-});
+    }
+);
 
 
-closeCraft.addEventListener("click", () => {
+closeCraft.addEventListener(
+    "click",
+    () => {
 
-    craftMenu.classList.remove("open");
+        craftMenu.classList.remove("open");
 
-});
+    }
+);
 
 
 // ==============================
@@ -877,8 +1049,38 @@ fruitButton.addEventListener(
 
 
 // ==============================
+// AUTOSAVE
+// ==============================
+
+setInterval(
+    () => {
+
+        saveGame();
+
+    },
+    5000
+);
+
+
+// ==============================
+// SAVE WHEN LEAVING
+// ==============================
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        saveGame();
+
+    }
+);
+
+
+// ==============================
 // START
 // ==============================
+
+loadGame();
 
 updateInventory();
 updateCraftSlots();
