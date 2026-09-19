@@ -458,13 +458,6 @@ function loadGame() {
                 orangesPerSecond *
                 offlineSeconds;
 
-            oranges +=
-                offlineOranges;
-
-            totalOranges +=
-                offlineOranges;
-        }
-
         updateDisplay();
 
     } catch (error) {
@@ -517,6 +510,45 @@ window.addEventListener(
 // ==========================================
 // START GAME
 // ==========================================
+// ==========================================
+// RESET SAVE
+// ==========================================
+
+const resetSaveButton =
+    document.getElementById("resetSave");
+
+resetSaveButton.addEventListener("click", function() {
+
+    const confirmed = confirm(
+        "Are you sure you want to reset your Orange Clicker save?\n\n" +
+        "This will delete all oranges and upgrades."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    // Delete saved data
+    localStorage.removeItem("orangeClickerSave");
+
+    // Reset everything
+    oranges = 0;
+    totalOranges = 0;
+
+    perClick = 1;
+    orangesPerSecond = 0;
+
+    for (const type in upgrades) {
+        upgrades[type] = 0;
+    }
+
+    // Update the game
+    updateDisplay();
+
+    alert("🍊 Save reset! Starting fresh.");
+});
+
+Now clicking **🗑️ Reset Save** will completely wipe the save and immediately reset the game.
 
 loadGame();
 
