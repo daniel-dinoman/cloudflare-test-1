@@ -11,6 +11,38 @@
             box-sizing: border-box;
         }
 
+        .reset-button {
+            width: 100%;
+            margin-top: 20px;
+        
+            padding: 12px;
+        
+            background: #7a250f;
+            color: #fff4df;
+        
+            border: 3px solid #a83b18;
+            border-radius: 9px;
+        
+            font-size: 15px;
+            font-weight: bold;
+        
+            cursor: pointer;
+        
+            box-shadow: 0 4px 0 #451207;
+        
+            transition: transform 0.1s, background 0.1s;
+        }
+        
+        .reset-button:hover {
+            background: #963019;
+        }
+        
+        .reset-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #451207;
+        }
+
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -421,6 +453,9 @@
                 <p>🍊 Per Click: <b id="perClick">1</b></p>
                 <p>🌳 Per Second: <b id="perSecondSmall">0</b></p>
                 <p>📦 Upgrades: <b id="upgradeCount">0</b></p>
+                <button id="resetSave" class="reset-button">
+                    🗑️ Reset Save
+                </button>
             </div>
 
         </aside>
