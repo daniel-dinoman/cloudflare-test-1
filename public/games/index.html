@@ -2,6 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Orange Peel Club Games</title>
 
     <style>
@@ -45,6 +47,8 @@
             box-shadow: 0 4px 0 #8a4200;
 
             transition: transform 0.12s, box-shadow 0.12s;
+
+            z-index: 10;
         }
 
         .back-button:hover {
@@ -69,6 +73,8 @@
             color: #ff9d18;
 
             text-shadow: 3px 3px 0 #7a3d00;
+
+            text-align: center;
         }
 
 
@@ -151,6 +157,39 @@
 
             box-shadow: 0 1px 0 #8a4200;
         }
+
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .back-button {
+                top: 12px;
+                left: 12px;
+
+                padding: 9px 14px;
+                font-size: 15px;
+            }
+
+            h1 {
+                margin-top: 65px;
+                margin-bottom: 25px;
+
+                font-size: 34px;
+            }
+
+            .game-frame {
+                width: 92vw;
+                height: 450px;
+
+                padding: 14px;
+            }
+
+            .game-button {
+                padding: 17px;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 
@@ -172,19 +211,13 @@
 
     <div class="game-frame">
 
-        <!-- GAME 1 -->
-
         <a class="game-button" href="/games/orangle">
             Orangle
         </a>
 
-        <!-- GAME 2 -->
-
         <a class="game-button" href="/games/eaglercraft">
             Eaglercraft
         </a>
-
-        <!-- Add more games here -->
 
         <a class="game-button" href="/games/clicker">
             Orange Clicker
