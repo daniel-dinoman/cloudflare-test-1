@@ -30,19 +30,17 @@ const perClickDisplay = document.getElementById("perClick");
 const perSecondSmall = document.getElementById("perSecondSmall");
 const upgradeCount = document.getElementById("upgradeCount");
 const clickText = document.getElementById("clickText");
+const resetSaveButton = document.getElementById("resetSave");
 
 
 // ==========================================
 // UPGRADE DATA
 // ==========================================
 
-// Cookie Clicker-style scaling.
-//
-// Every purchase multiplies the next cost by 1.15.
-
 const COST_MULTIPLIER = 1.15;
 
 const upgradeData = {
+
     peel: {
         cost: 15,
         click: 1,
@@ -126,7 +124,7 @@ function formatNumber(number) {
 
 
 // ==========================================
-// GET CURRENT UPGRADE COST
+// GET UPGRADE COST
 // ==========================================
 
 function getUpgradeCost(type) {
@@ -137,7 +135,10 @@ function getUpgradeCost(type) {
 
     return Math.floor(
         upgrade.cost *
-        Math.pow(COST_MULTIPLIER, amountOwned)
+        Math.pow(
+            COST_MULTIPLIER,
+            amountOwned
+        )
     );
 }
 
@@ -205,19 +206,22 @@ function updateDisplay() {
 // CLICK ORANGE
 // ==========================================
 
-orangeButton.addEventListener("click", function(event) {
+orangeButton.addEventListener(
+    "click",
+    function(event) {
 
-    oranges += perClick;
+        oranges += perClick;
 
-    totalOranges += perClick;
+        totalOranges += perClick;
 
-    updateDisplay();
+        updateDisplay();
 
-    showClickText(
-        perClick,
-        event
-    );
-});
+        showClickText(
+            perClick,
+            event
+        );
+    }
+);
 
 
 // ==========================================
@@ -287,21 +291,16 @@ for (const type in buttons) {
             const cost =
                 getUpgradeCost(type);
 
-            // Not enough oranges
             if (oranges < cost) {
                 return;
             }
 
-            // Pay for upgrade
             oranges -= cost;
 
-            // Increase amount owned
             upgrades[type]++;
 
-            // Update everything
             updateDisplay();
 
-            // Save immediately
             saveGame();
         }
     );
@@ -322,11 +321,9 @@ function updateShop() {
         const cost =
             getUpgradeCost(type);
 
-        // Disable if too expensive
         button.disabled =
             oranges < cost;
 
-        // Update displayed cost
         const costText =
             button.querySelector(
                 ".upgrade-cost"
@@ -343,8 +340,6 @@ function updateShop() {
 // ==========================================
 // PASSIVE PRODUCTION
 // ==========================================
-
-// Runs 10 times per second.
 
 setInterval(function() {
 
@@ -372,17 +367,13 @@ function saveGame() {
 
     const saveData = {
 
-        oranges:
-            oranges,
+        oranges: oranges,
 
-        totalOranges:
-            totalOranges,
+        totalOranges: totalOranges,
 
-        upgrades:
-            upgrades,
+        upgrades: upgrades,
 
-        lastSave:
-            Date.now()
+        lastSave: Date.now()
     };
 
     localStorage.setItem(
@@ -421,6 +412,9 @@ function loadGame() {
         totalOranges =
             Number(data.totalOranges) || 0;
 
+
+        // Load upgrades
+
         if (data.upgrades) {
 
             for (const type in upgrades) {
@@ -432,31 +426,13 @@ function loadGame() {
             }
         }
 
-        // Calculate production before
-        // calculating offline earnings.
+
+        // Recalculate stats
 
         calculateStats();
 
-        // ======================================
-        // OFFLINE PRODUCTION
-        // ======================================
 
-        if (data.lastSave) {
-
-            const secondsAway =
-                (Date.now() -
-                    data.lastSave) / 1000;
-
-            // Maximum 8 hours offline
-            const offlineSeconds =
-                Math.min(
-                    secondsAway,
-                    60 * 60 * 8
-                );
-
-            const offlineOranges =
-                orangesPerSecond *
-                offlineSeconds;
+        // Update the game
 
         updateDisplay();
 
@@ -485,10 +461,64 @@ function loadGame() {
 
 
 // ==========================================
-// AUTO SAVE
+// RESET SAVE
 // ==========================================
 
-// Save every 5 seconds.
+resetSaveButton.addEventListener(
+    "click",
+    function() {
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to reset your Orange Clicker save?\n\n" +
+                "This will delete ALL oranges and upgrades."
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        // Delete saved data
+
+        localStorage.removeItem(
+            "orangeClickerSave"
+        );
+
+
+        // Reset game
+
+        oranges = 0;
+
+        totalOranges = 0;
+
+        perClick = 1;
+
+        orangesPerSecond = 0;
+
+
+        // Reset upgrades
+
+        for (const type in upgrades) {
+            upgrades[type] = 0;
+        }
+
+
+        // Update screen
+
+        updateDisplay();
+
+
+        alert(
+            "🍊 Save reset! Starting fresh."
+        );
+    }
+);
+
+
+// ==========================================
+// AUTO SAVE
+// ==========================================
 
 setInterval(function() {
 
@@ -510,45 +540,6 @@ window.addEventListener(
 // ==========================================
 // START GAME
 // ==========================================
-// ==========================================
-// RESET SAVE
-// ==========================================
-
-const resetSaveButton =
-    document.getElementById("resetSave");
-
-resetSaveButton.addEventListener("click", function() {
-
-    const confirmed = confirm(
-        "Are you sure you want to reset your Orange Clicker save?\n\n" +
-        "This will delete all oranges and upgrades."
-    );
-
-    if (!confirmed) {
-        return;
-    }
-
-    // Delete saved data
-    localStorage.removeItem("orangeClickerSave");
-
-    // Reset everything
-    oranges = 0;
-    totalOranges = 0;
-
-    perClick = 1;
-    orangesPerSecond = 0;
-
-    for (const type in upgrades) {
-        upgrades[type] = 0;
-    }
-
-    // Update the game
-    updateDisplay();
-
-    alert("🍊 Save reset! Starting fresh.");
-});
-
-Now clicking **🗑️ Reset Save** will completely wipe the save and immediately reset the game.
 
 loadGame();
 
