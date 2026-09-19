@@ -79,6 +79,53 @@ function loadGame() {
     }
 }
 
+// ==============================
+// RESET SAVE
+// ==============================
+
+const resetSave =
+    document.querySelector("#resetSave");
+
+resetSave.addEventListener(
+    "click",
+    () => {
+
+        const confirmed = confirm(
+            "Are you sure you want to reset your Peelerz save?\n\n" +
+            "This will delete your entire inventory and reset your fruit."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        // Delete save
+        localStorage.removeItem(SAVE_KEY);
+
+        // Reset inventory
+        inventory = {};
+
+        // Reset crafting slots
+        selectedItems = [
+            null,
+            null,
+            null
+        ];
+
+        // Reset fruit
+        currentFruitIndex = 0;
+
+        // Update everything
+        updateInventory();
+        updateCraftSlots();
+        updateFruit();
+
+        result.textContent =
+            "SAVE RESET!";
+
+    }
+);
+
 
 // ==============================
 // FRUITS
