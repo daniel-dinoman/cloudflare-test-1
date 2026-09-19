@@ -21,6 +21,7 @@ let answer = answers[Math.floor(Math.random() * answers.length)];
 let currentGuess = "";
 let currentRow = 0;
 let gameOver = false;
+let hasRotted = false;
 
 // Rotten clue
 let rottenClue = null;
@@ -254,7 +255,7 @@ function submitGuess() {
 
     let displayedResult = [...trueResult];
 
-    if (Math.random() < 0.30) {
+    if (!hasRotted && Math.random() < 0.30) {
 
         const possibleIndexes = [];
 
@@ -298,6 +299,7 @@ function submitGuess() {
                 trueResult: trueResult[index],
                 fakeResult: fakeResult
             };
+            hasRotted = true;
         }
     }
 
