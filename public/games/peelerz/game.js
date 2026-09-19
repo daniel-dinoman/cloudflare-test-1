@@ -7,6 +7,10 @@ const closeCraft = document.querySelector("#closeCraft");
 
 const inventoryElement = document.querySelector("#inventory");
 
+const previousFruit = document.querySelector("#previousFruit");
+const nextFruit = document.querySelector("#nextFruit");
+const fruitName = document.querySelector("#fruitName");
+
 const craftSlots = [
     document.querySelector("#slot1"),
     document.querySelector("#slot2"),
@@ -17,6 +21,19 @@ const craftAction = document.querySelector("#craftAction");
 
 let inventory = {};
 let selectedItems = [null, null, null];
+
+
+// ==============================
+// FRUITS
+// ==============================
+
+const fruits = [
+    "orange",
+    "potato",
+    "banana"
+];
+
+let currentFruitIndex = 0;
 
 
 // ==============================
@@ -48,10 +65,71 @@ const orangeDrops = [
 
 
 // ==============================
+// POTATO DROPS
+// ==============================
+
+const potatoDrops = [
+    {
+        name: "Potato Peel",
+        chance: 45
+    },
+    {
+        name: "Potato",
+        chance: 30
+    },
+    {
+        name: "Potato Sprout",
+        chance: 15
+    },
+    {
+        name: "Golden Potato Peel",
+        chance: 5
+    },
+    {
+        name: "EVIL Potato Peel",
+        chance: 5
+    }
+];
+
+
+// ==============================
+// BANANA DROPS
+// ==============================
+
+const bananaDrops = [
+    {
+        name: "Banana Peel",
+        chance: 45
+    },
+    {
+        name: "Banana",
+        chance: 30
+    },
+    {
+        name: "Banana Seed",
+        chance: 15
+    },
+    {
+        name: "Golden Banana Peel",
+        chance: 5
+    },
+    {
+        name: "EVIL Banana Peel",
+        chance: 5
+    }
+];
+
+
+// ==============================
 // CRAFTING RECIPES
 // ==============================
 
 const recipes = [
+
+    // ==========================
+    // ORANGE
+    // ==========================
+
     {
         ingredients: [
             "Orange Peel",
@@ -185,15 +263,15 @@ const recipes = [
     {
         ingredients: [
             "Orange Seed",
-            "Orange Seed",
+            "Orange Seed"
         ],
         result: "Orange Plant"
     },
-    
+
     {
         ingredients: [
             "Orange Plant",
-            "Orange Plant",
+            "Orange Plant"
         ],
         result: "Orange Tree"
     },
@@ -204,8 +282,200 @@ const recipes = [
             "Orange Peel"
         ],
         result: "Golden Orange"
+    },
+
+
+    // ==========================
+    // POTATO
+    // ==========================
+
+    {
+        ingredients: [
+            "Potato Peel",
+            "Potato Peel"
+        ],
+        result: "Potato Strip"
+    },
+
+    {
+        ingredients: [
+            "Potato",
+            "Potato Peel"
+        ],
+        result: "Mashed Potato"
+    },
+
+    {
+        ingredients: [
+            "Potato",
+            "Potato",
+            "Potato"
+        ],
+        result: "Potato Mountain"
+    },
+
+    {
+        ingredients: [
+            "Potato Sprout",
+            "Potato Sprout"
+        ],
+        result: "Potato Plant"
+    },
+
+    {
+        ingredients: [
+            "Potato Plant",
+            "Potato Plant"
+        ],
+        result: "Potato Farm"
+    },
+
+    {
+        ingredients: [
+            "Golden Potato Peel",
+            "Potato Peel"
+        ],
+        result: "Golden Potato"
+    },
+
+    {
+        ingredients: [
+            "EVIL Potato Peel",
+            "EVIL Potato Peel"
+        ],
+        result: "EVIL Potato Strip"
+    },
+
+
+    // ==========================
+    // BANANA
+    // ==========================
+
+    {
+        ingredients: [
+            "Banana Peel",
+            "Banana Peel"
+        ],
+        result: "Banana Strip"
+    },
+
+    {
+        ingredients: [
+            "Banana",
+            "Banana Peel"
+        ],
+        result: "Banana Mash"
+    },
+
+    {
+        ingredients: [
+            "Banana Seed",
+            "Banana Seed"
+        ],
+        result: "Banana Plant"
+    },
+
+    {
+        ingredients: [
+            "Banana Plant",
+            "Banana Plant"
+        ],
+        result: "Banana Tree"
+    },
+
+    {
+        ingredients: [
+            "Golden Banana Peel",
+            "Banana Peel"
+        ],
+        result: "Golden Banana"
+    },
+
+    {
+        ingredients: [
+            "EVIL Banana Peel",
+            "EVIL Banana Peel"
+        ],
+        result: "EVIL Banana Strip"
+    },
+
+
+    // ==========================
+    // CROSS-FRUIT RECIPES
+    // ==========================
+
+    {
+        ingredients: [
+            "Orange Peel",
+            "Banana Peel"
+        ],
+        result: "Orange Banana"
+    },
+
+    {
+        ingredients: [
+            "Orange Peel",
+            "Potato Peel"
+        ],
+        result: "Orange Potato"
+    },
+
+    {
+        ingredients: [
+            "Banana Peel",
+            "Potato Peel"
+        ],
+        result: "Banana Potato"
+    },
+
+    {
+        ingredients: [
+            "Orange Juice",
+            "Banana"
+        ],
+        result: "Orange Banana Juice"
+    },
+
+    {
+        ingredients: [
+            "Potato",
+            "Orange Peel",
+            "Banana Peel"
+        ],
+        result: "FRUIT POTATO"
     }
 ];
+
+
+// ==============================
+// CURRENT FRUIT
+// ==============================
+
+function getCurrentFruit() {
+    return fruits[currentFruitIndex];
+}
+
+
+// ==============================
+// GET CURRENT DROPS
+// ==============================
+
+function getCurrentDrops() {
+
+    const fruit = getCurrentFruit();
+
+    if (fruit === "orange") {
+        return orangeDrops;
+    }
+
+    if (fruit === "potato") {
+        return potatoDrops;
+    }
+
+    if (fruit === "banana") {
+        return bananaDrops;
+    }
+}
 
 
 // ==============================
@@ -213,11 +483,15 @@ const recipes = [
 // ==============================
 
 function getRandomDrop() {
+
+    const drops = getCurrentDrops();
+
     const random = Math.random() * 100;
 
     let total = 0;
 
-    for (const drop of orangeDrops) {
+    for (const drop of drops) {
+
         total += drop.chance;
 
         if (random < total) {
@@ -225,27 +499,139 @@ function getRandomDrop() {
         }
     }
 
-    return orangeDrops[0].name;
+    return drops[0].name;
 }
 
 
 // ==============================
-// PEEL ORANGE
+// PEEL FRUIT
 // ==============================
 
-function peelOrange() {
+function peelFruit() {
+
     const item = getRandomDrop();
 
     addItem(item);
 
-    result.textContent = `YOU GOT: ${item}!`;
+    result.textContent =
+        `YOU GOT: ${item}!`;
 
     fruitButton.classList.add("peeling");
 
     setTimeout(() => {
+
         fruitButton.classList.remove("peeling");
+
     }, 300);
 }
+
+
+// ==============================
+// UPDATE FRUIT
+// ==============================
+
+function updateFruit() {
+
+    const fruit = getCurrentFruit();
+
+    fruitName.textContent =
+        fruit.toUpperCase();
+
+    fruitButton.setAttribute(
+        "aria-label",
+        `Peel ${fruit}`
+    );
+
+
+    // Remove old fruit
+    fruitButton.innerHTML = "";
+
+
+    // ==========================
+    // ORANGE
+    // ==========================
+
+    if (fruit === "orange") {
+
+        const orange = document.createElement("div");
+
+        orange.className = "orange";
+
+        const leaf = document.createElement("div");
+
+        leaf.className = "orange-leaf";
+
+        orange.appendChild(leaf);
+
+        fruitButton.appendChild(orange);
+    }
+
+
+    // ==========================
+    // POTATO
+    // ==========================
+
+    if (fruit === "potato") {
+
+        const potato = document.createElement("div");
+
+        potato.className = "potato";
+
+        fruitButton.appendChild(potato);
+    }
+
+
+    // ==========================
+    // BANANA
+    // ==========================
+
+    if (fruit === "banana") {
+
+        const banana = document.createElement("div");
+
+        banana.className = "banana";
+
+        fruitButton.appendChild(banana);
+    }
+}
+
+
+// ==============================
+// PREVIOUS FRUIT
+// ==============================
+
+previousFruit.addEventListener("click", () => {
+
+    currentFruitIndex--;
+
+    if (currentFruitIndex < 0) {
+        currentFruitIndex = fruits.length - 1;
+    }
+
+    updateFruit();
+
+    result.textContent =
+        `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
+});
+
+
+// ==============================
+// NEXT FRUIT
+// ==============================
+
+nextFruit.addEventListener("click", () => {
+
+    currentFruitIndex++;
+
+    if (currentFruitIndex >= fruits.length) {
+        currentFruitIndex = 0;
+    }
+
+    updateFruit();
+
+    result.textContent =
+        `NOW PEELING: ${getCurrentFruit().toUpperCase()}`;
+});
 
 
 // ==============================
@@ -253,13 +639,16 @@ function peelOrange() {
 // ==============================
 
 function addItem(item) {
-    inventory[item] = (inventory[item] || 0) + 1;
+
+    inventory[item] =
+        (inventory[item] || 0) + 1;
 
     updateInventory();
 }
 
 
 function removeItem(item) {
+
     if (!inventory[item]) {
         return;
     }
@@ -275,11 +664,13 @@ function removeItem(item) {
 
 
 function updateInventory() {
+
     inventoryElement.innerHTML = "";
 
     const items = Object.keys(inventory);
 
     if (items.length === 0) {
+
         const empty = document.createElement("div");
 
         empty.className = "empty-inventory";
@@ -290,7 +681,9 @@ function updateInventory() {
         return;
     }
 
+
     for (const item of items) {
+
         const button = document.createElement("button");
 
         button.className = "inventory-item";
@@ -299,7 +692,9 @@ function updateInventory() {
             `${item} ×${inventory[item]}`;
 
         button.addEventListener("click", () => {
+
             addToCrafting(item);
+
         });
 
         inventoryElement.appendChild(button);
@@ -313,10 +708,14 @@ function updateInventory() {
 
 function addToCrafting(item) {
 
-    const emptySlot = selectedItems.indexOf(null);
+    const emptySlot =
+        selectedItems.indexOf(null);
 
     if (emptySlot === -1) {
-        result.textContent = "ALL 3 SLOTS ARE FULL!";
+
+        result.textContent =
+            "ALL 3 SLOTS ARE FULL!";
+
         return;
     }
 
@@ -338,8 +737,8 @@ function updateCraftSlots() {
 
         const slot = craftSlots[i];
 
-        slot.textContent = selectedItems[i] || "";
-
+        slot.textContent =
+            selectedItems[i] || "";
     }
 }
 
@@ -384,14 +783,17 @@ function findRecipe() {
 
     for (const recipe of recipes) {
 
-        const recipeIngredients = [...recipe.ingredients]
-            .sort();
+        const recipeIngredients =
+            [...recipe.ingredients].sort();
 
         if (
-            ingredients.length === recipeIngredients.length &&
+            ingredients.length ===
+                recipeIngredients.length &&
+
             ingredients.every(
                 (item, index) =>
-                    item === recipeIngredients[index]
+                    item ===
+                    recipeIngredients[index]
             )
         ) {
             return recipe;
@@ -458,14 +860,20 @@ closeCraft.addEventListener("click", () => {
 // CRAFT BUTTON
 // ==============================
 
-craftAction.addEventListener("click", craft);
+craftAction.addEventListener(
+    "click",
+    craft
+);
 
 
 // ==============================
-// FRUIT
+// FRUIT BUTTON
 // ==============================
 
-fruitButton.addEventListener("click", peelOrange);
+fruitButton.addEventListener(
+    "click",
+    peelFruit
+);
 
 
 // ==============================
@@ -474,3 +882,4 @@ fruitButton.addEventListener("click", peelOrange);
 
 updateInventory();
 updateCraftSlots();
+updateFruit();
