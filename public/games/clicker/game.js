@@ -145,14 +145,13 @@ function updateDisplay() {
     updateUpgradeButtons();
 }
 
-
 // ---------- CLICK ORANGE ----------
 
 orangeButton.addEventListener("click", function(event) {
     oranges += perClick;
     totalOranges += perClick;
 
-    showClickText(perClick);
+    showClickText(perClick, event);
 
     updateDisplay();
 });
@@ -160,27 +159,18 @@ orangeButton.addEventListener("click", function(event) {
 
 // ---------- CLICK POPUP ----------
 
-function showClickText(amount) {
+function showClickText(amount, event) {
     clickText.textContent = "+" + formatNumber(amount) + " 🍊";
 
-    // Position popup around the mouse.
     const rect = orangeButton.getBoundingClientRect();
 
-    let x;
-    let y;
+    clickText.style.left =
+        (event.clientX - 25) + "px";
 
-    if (eventIsInsideOrange(event)) {
-        x = event.clientX - rect.left;
-        y = event.clientY - rect.top;
-    } else {
-        x = rect.width / 2;
-        y = rect.height / 2;
-    }
+    clickText.style.top =
+        (event.clientY - 20) + "px";
 
-    clickText.style.left = (rect.left + x - 25) + "px";
-    clickText.style.top = (rect.top + y - 20) + "px";
-
-    // Restart animation.
+    // Restart animation
     clickText.classList.remove("pop");
 
     void clickText.offsetWidth;
