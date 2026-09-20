@@ -491,6 +491,7 @@ gamePaused = true;
 pauseStartTime = performance.now();
 
 upgradeMenu.classList.add("open");
+
 }
 
 function chooseUpgrade(type) {
@@ -924,7 +925,6 @@ gameOver.classList.add("open");
 
 function restartGame() {
 
-```
 running = true;
 gamePaused = false;
 
