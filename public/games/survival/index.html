@@ -1,488 +1,400 @@
 <!DOCTYPE html>
-
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
-
-<title>Banana Survival</title>
-
-<style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #111;
-        font-family: Arial, sans-serif;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: none;
-    }
-
-    #gameCanvas {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
-
-    /* =========================
-       TOP UI
-    ========================= */
-
-    #topUI {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: min(500px, 80vw);
-        z-index: 10;
-        pointer-events: none;
-    }
-
-    #killText {
-        text-align: center;
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 7px;
-        text-shadow: 2px 2px 4px black;
-    }
-
-    #progressBackground {
-        width: 100%;
-        height: 22px;
-        background: #292929;
-        border: 3px solid #111;
-        border-radius: 999px;
-        overflow: hidden;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
-    }
-
-    #progressBar {
-        width: 0%;
-        height: 100%;
-        background: #f5c542;
-        transition: width 0.1s linear;
-    }
-
-    /* =========================
-       TOP LEFT UI
-    ========================= */
-
-    #topLeftUI {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 10;
-
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    #score {
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-
-        text-shadow: 2px 2px 4px black;
-        pointer-events: none;
-    }
-
-    #backToGames {
-        border: 2px solid #555;
-        border-radius: 7px;
-
-        padding: 8px 12px;
-
-        background: #222;
-        color: white;
-
-        font-size: 14px;
-        font-weight: bold;
-
-        cursor: pointer;
-
-        text-shadow: 1px 1px 2px black;
-        transition:
-            background 0.1s,
-            border-color 0.1s,
-            transform 0.1s;
-    }
-
-    #backToGames:hover {
-        background: #333;
-        border-color: #f5c542;
-        transform: translateY(-1px);
-    }
-
-    /* =========================
-       TIMER
-    ========================= */
-
-    #timer {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 10;
-
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-
-        text-shadow: 2px 2px 4px black;
-        pointer-events: none;
-    }
-
-    /* =========================
-       GAME OVER
-    ========================= */
-
-    #gameOver {
-        position: fixed;
-        inset: 0;
-        z-index: 30;
-
-        display: none;
-        align-items: center;
-        justify-content: center;
-
-        background: rgba(0, 0, 0, 0.75);
-    }
-
-    #gameOver.open {
-        display: flex;
-    }
-
-    #gameOverBox {
-        width: min(400px, 85vw);
-        padding: 35px;
-
-        text-align: center;
-
-        background: #222;
-        border: 3px solid #f5c542;
-        border-radius: 15px;
-
-        color: white;
-
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    }
-
-    #gameOverBox h1 {
-        font-size: 42px;
-        margin-bottom: 15px;
-    }
-
-    #finalScore {
-        font-size: 22px;
-        margin-bottom: 25px;
-    }
-
-    #restartButton {
-        border: none;
-        border-radius: 8px;
-
-        padding: 13px 28px;
-
-        background: #f5c542;
-        color: #111;
-
-        font-size: 18px;
-        font-weight: bold;
-
-        cursor: pointer;
-    }
-
-    #restartButton:hover {
-        background: #ffd95c;
-    }
-
-    /* =========================
-       UPGRADE MENU
-    ========================= */
-
-    #upgradeMenu {
-        position: fixed;
-        inset: 0;
-        z-index: 20;
-
-        display: none;
-        align-items: center;
-        justify-content: center;
-
-        background: rgba(0, 0, 0, 0.7);
-    }
-
-    #upgradeMenu.open {
-        display: flex;
-    }
-
-    #upgradeBox {
-        width: min(600px, 90vw);
-        padding: 30px;
-
-        background: #222;
-        border: 3px solid #f5c542;
-        border-radius: 15px;
-
-        color: white;
-        text-align: center;
-
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    }
-
-    #upgradeBox h2 {
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
-
-    #upgradeBox p {
-        color: #ccc;
-        margin-bottom: 22px;
-    }
-
-    #upgradeOptions {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-    }
-
-    .upgradeButton {
-        min-height: 130px;
-
-        padding: 15px;
-
-        background: #333;
-        color: white;
-
-        border: 2px solid #555;
-        border-radius: 10px;
-
-        cursor: pointer;
-
-        transition:
-            transform 0.1s,
-            background 0.1s,
-            border-color 0.1s;
-    }
-
-    .upgradeButton:hover {
-        background: #444;
-        border-color: #f5c542;
-        transform: translateY(-3px);
-    }
-
-    .upgradeTitle {
-        display: block;
-        color: #f5c542;
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .upgradeDescription {
-        display: block;
-        color: #ddd;
-        font-size: 14px;
-        line-height: 1.4;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 600px) {
-        #topUI {
-            top: 12px;
-            width: 75vw;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banana Survival</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        #killText {
-            font-size: 16px;
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #111;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            touch-action: none;
         }
 
-        #progressBackground {
-            height: 18px;
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
+
+        /* TOP LEFT */
 
         #topLeftUI {
-            top: 12px;
-            left: 12px;
-            gap: 7px;
-        }
-
-        #score {
-            font-size: 13px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         #backToGames {
-            padding: 7px 9px;
-            font-size: 11px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
 
+        #backToGames:hover {
+            background: #333;
+        }
+
+        #score {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        /* TOP CENTER */
+
+        #topUI {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: min(420px, 80vw);
+            text-align: center;
+            color: white;
+            pointer-events: none;
+        }
+
+        #waveText {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        #killText {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        #progressBackground {
+            width: 100%;
+            height: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: #ffd21f;
+            transition: width 0.15s ease;
+        }
+
+        /* TOP RIGHT TIMER */
+
         #timer {
-            top: 12px;
-            right: 12px;
-            font-size: 15px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        /* UPGRADE MENU */
+
+        #upgradeMenu {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.65);
         }
 
         #upgradeBox {
-            padding: 20px;
+            width: min(700px, 90vw);
+            padding: 30px;
+            border-radius: 16px;
+            background: #202020;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        #upgradeBox h2 {
-            font-size: 26px;
+        #upgradeBox h1 {
+            margin-bottom: 8px;
+            font-size: 32px;
         }
 
-        #upgradeOptions {
-            grid-template-columns: 1fr;
+        #upgradeBox p {
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        #upgradeChoices {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
         .upgradeButton {
-            min-height: 90px;
+            flex: 1;
+            min-height: 150px;
+            padding: 20px;
+            border: 2px solid #444;
+            border-radius: 12px;
+            background: #292929;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.15s;
         }
-    }
-</style>
 
+        .upgradeButton:hover {
+            transform: translateY(-4px);
+            background: #353535;
+        }
+
+        .upgradeButton .upgradeTitle {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .upgradeButton .upgradeDescription {
+            color: #bbb;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* GAME OVER / VICTORY */
+
+        #gameOver {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        #gameOverBox {
+            width: min(500px, 90vw);
+            padding: 35px;
+            border-radius: 16px;
+            background: #202020;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #gameOverTitle {
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        #finalKills {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #ddd;
+        }
+
+        #restartButton {
+            padding: 13px 28px;
+            border: none;
+            border-radius: 9px;
+            background: #ffd21f;
+            color: #111;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #restartButton:hover {
+            background: #ffe05a;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+            #topLeftUI {
+                top: 12px;
+                left: 12px;
+            }
+
+            #backToGames {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            #score {
+                font-size: 14px;
+            }
+
+            #timer {
+                top: 12px;
+                right: 12px;
+                font-size: 14px;
+            }
+
+            #waveText {
+                font-size: 18px;
+            }
+
+            #killText {
+                font-size: 15px;
+            }
+
+            #topUI {
+                top: 12px;
+                width: 45vw;
+            }
+
+            #upgradeBox {
+                padding: 20px;
+            }
+
+            #upgradeBox h1 {
+                font-size: 25px;
+            }
+
+            #upgradeChoices {
+                flex-direction: column;
+            }
+
+            .upgradeButton {
+                min-height: 100px;
+            }
+
+            #gameOverTitle {
+                font-size: 30px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- =========================
-     GAME
-========================== -->
+    <canvas id="gameCanvas"></canvas>
 
-<canvas id="gameCanvas"></canvas>
+    <!-- TOP LEFT -->
+    <div id="topLeftUI">
+        <button id="backToGames">← BACK TO GAMES</button>
 
-
-<!-- =========================
-     TOP LEFT UI
-========================== -->
-
-<div id="topLeftUI">
-
-    <button id="backToGames">
-        ← BACK TO GAMES
-    </button>
-
-    <div id="score">
-        BANANAS KILLED: <span id="killCount">0</span>
+        <div id="score">
+            BANANAS KILLED: <span id="killCount">0</span>
+        </div>
     </div>
 
-</div>
+    <!-- TOP CENTER -->
+    <div id="topUI">
+        <div id="waveText">WAVE 1 / 20</div>
 
+        <div id="killText">
+            0 / 10
+        </div>
 
-<!-- =========================
-     TIMER
-========================== -->
-
-<div id="timer">
-    TIME: <span id="elapsedTime">0:00</span>
-</div>
-
-
-<!-- =========================
-     PROGRESS BAR
-========================== -->
-
-<div id="topUI">
-
-    <div id="killText">
-        0 / 10
+        <div id="progressBackground">
+            <div id="progressBar"></div>
+        </div>
     </div>
 
-    <div id="progressBackground">
-        <div id="progressBar"></div>
+    <!-- TIMER -->
+    <div id="timer">
+        TIME: <span id="elapsedTime">0:00</span>
     </div>
 
-</div>
+    <!-- UPGRADE MENU -->
+    <div id="upgradeMenu">
+        <div id="upgradeBox">
 
+            <h1>⚡ CHOOSE AN UPGRADE</h1>
 
-<!-- =========================
-     UPGRADE MENU
-========================== -->
+            <p>
+                Choose one upgrade before the next wave.
+            </p>
 
-<div id="upgradeMenu">
+            <div id="upgradeChoices">
 
-    <div id="upgradeBox">
+                <button class="upgradeButton" data-upgrade="sword">
+                    <div class="upgradeTitle">
+                        ⚔️ SHARPER SWORD
+                    </div>
 
-        <h2>UPGRADE!</h2>
+                    <div class="upgradeDescription">
+                        Increase the sword's damage range.
+                    </div>
+                </button>
 
-        <p>
-            Choose an upgrade to help the orange survive.
-        </p>
+                <button class="upgradeButton" data-upgrade="length">
+                    <div class="upgradeTitle">
+                        📏 LONGER SWORD
+                    </div>
 
-        <div id="upgradeOptions">
+                    <div class="upgradeDescription">
+                        Make your sword reach farther.
+                    </div>
+                </button>
 
-            <button class="upgradeButton" data-upgrade="sword">
-                <span class="upgradeTitle">
-                    ⚔️ SHARPER SWORD
-                </span>
+                <button class="upgradeButton" data-upgrade="speed">
+                    <div class="upgradeTitle">
+                        💨 FASTER SWORD
+                    </div>
 
-                <span class="upgradeDescription">
-                    Increase your sword's damage range.
-                </span>
-            </button>
+                    <div class="upgradeDescription">
+                        Make the sword move faster.
+                    </div>
+                </button>
 
+            </div>
+        </div>
+    </div>
 
-            <button class="upgradeButton" data-upgrade="length">
-                <span class="upgradeTitle">
-                    📏 LONGER SWORD
-                </span>
+    <!-- GAME OVER / VICTORY -->
+    <div id="gameOver">
+        <div id="gameOverBox">
 
-                <span class="upgradeDescription">
-                    Make your sword reach farther.
-                </span>
-            </button>
+            <div id="gameOverTitle">
+                GAME OVER
+            </div>
 
+            <div id="finalKills">
+                Bananas killed: 0
+            </div>
 
-            <button class="upgradeButton" data-upgrade="speed">
-                <span class="upgradeTitle">
-                    💨 FASTER SWORD
-                </span>
-
-                <span class="upgradeDescription">
-                    Make your sword move faster.
-                </span>
+            <button id="restartButton">
+                PLAY AGAIN
             </button>
 
         </div>
-
     </div>
 
-</div>
+    <script src="game.js"></script>
 
-
-<!-- =========================
-     GAME OVER
-========================== -->
-
-<div id="gameOver">
-
-    <div id="gameOverBox">
-
-        <h1>🍌 GAME OVER</h1>
-
-        <div id="finalScore">
-            Bananas killed: <span id="finalKills">0</span>
-        </div>
-
-        <button id="restartButton">
-            PLAY AGAIN
-        </button>
-
-    </div>
-
-</div>
-
-
-<script src="game.js"></script>
-
-</body> </html>
+</body>
+</html>
