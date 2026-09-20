@@ -188,7 +188,7 @@ function updateDisplay() {
 
     perSecond.textContent =
         formatNumber(orangesPerSecond) +
-        " oranges / second";
+        " peels / second";
 
     perClickDisplay.textContent =
         formatNumber(perClick);
