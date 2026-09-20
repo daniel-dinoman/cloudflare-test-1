@@ -12,6 +12,7 @@ let upgrades = {
     peel: 0,
     juice: 0,
     tree: 0,
+    sharpness: 0,
     grandma: 0,
     factory: 0,
     government: 0,
@@ -57,6 +58,12 @@ const upgradeData = {
         cost: 500,
         click: 0,
         passive: 5
+    },
+
+    sharpness: {
+        cost: 750,
+        click: 5,
+        passive: 0
     },
 
     grandma: {
@@ -263,6 +270,9 @@ const buttons = {
 
     tree:
         document.getElementById("upgradeTree"),
+
+    sharpness:
+        document.getElementById("upgradeSharpness"),
 
     grandma:
         document.getElementById("upgradeGrandma"),
