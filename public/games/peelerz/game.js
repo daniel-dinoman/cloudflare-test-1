@@ -272,7 +272,7 @@ const recipes = [
         ingredients: [
             "Orange Peel",
             "Banana Peel",
-            "Potato Peel
+            "Potato Peel"
         ],
         result: "Peel Fusion"
     },
@@ -281,7 +281,7 @@ const recipes = [
         ingredients: [
             "EVIL Orange Peel",
             "EVIL Banana Peel",
-            "EVIL Potato Peel
+            "EVIL Potato Peel"
         ],
         result: "EVIL Peel Fusion"
     },
