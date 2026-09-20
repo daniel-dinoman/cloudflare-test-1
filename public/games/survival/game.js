@@ -15,7 +15,8 @@ const upgradeButtons = document.querySelectorAll(".upgradeButton");
 const gameOver = document.querySelector("#gameOver");
 const finalKills = document.querySelector("#finalKills");
 const restartButton = document.querySelector("#restartButton");
-
+let orangeHealth = 5;
+const MAX_ORANGE_HEALTH = 5;
 // ==============================
 // CANVAS
 // ==============================
@@ -594,28 +595,33 @@ openUpgradeMenu();
 // BANANA REACHES ORANGE
 // ==============================
 
-function bananaReachedOrange(
-banana
-) {
+function bananaReachedOrange(banana) {
 
-const centerX =
-    canvas.width / 2;
+    const centerX =
+        canvas.width / 2;
 
-const centerY =
-    canvas.height / 2;
+    const centerY =
+        canvas.height / 2;
 
+    return (
+        distance(
+            banana.x,
+            banana.y,
+            centerX,
+            centerY
+        ) <=
+        banana.radius +
+        orange.radius
+    );
+}
 
-return (
-    distance(
-        banana.x,
-        banana.y,
-        centerX,
-        centerY
-    ) <=
-    banana.radius +
-    orange.radius
-);
+function damageOrange() {
 
+    orangeHealth--;
+
+    if (orangeHealth <= 0) {
+        endGame();
+    }
 }
 
 // ==============================
@@ -694,10 +700,16 @@ for (
             banana
         )
     ) {
-
-        endGame();
-
-        return;
+    
+        bananas.splice(i, 1);
+    
+        damageOrange();
+    
+        if (!running) {
+            return;
+        }
+    
+        continue;
     }
 }
 
@@ -1284,7 +1296,7 @@ title.textContent =
 // ==============================
 
 function restartGame() {
-
+orangeHealth = MAX_ORANGE_HEALTH;
 running = true;
 
 gamePaused = false;
