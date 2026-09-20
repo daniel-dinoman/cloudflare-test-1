@@ -62,7 +62,7 @@ const upgradeData = {
 
     sharpness: {
         cost: 750,
-        click: 5,
+        click: 8,
         passive: 0
     },
 
