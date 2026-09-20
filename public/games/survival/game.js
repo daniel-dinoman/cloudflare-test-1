@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 const killCountElement = document.querySelector("#killCount");
 const killText = document.querySelector("#killText");
 const progressBar = document.querySelector("#progressBar");
+const waveText = document.querySelector("#waveText");
 
 const elapsedTimeElement = document.querySelector("#elapsedTime");
 const backToGamesButton = document.querySelector("#backToGames");
@@ -35,11 +36,50 @@ let running = true;
 let gamePaused = false;
 
 let kills = 0;
-let killsRequired = 10;
-
 let totalKills = 0;
 
 let bananas = [];
+
+// ==============================
+// WAVES
+// ==============================
+
+const MAX_WAVES = 20;
+
+let currentWave = 1;
+let waveEnemiesTotal = 10;
+let waveEnemiesRemaining = 10;
+
+let waveStarted = false;
+let waveSpawningFinished = false;
+
+// How many enemies each wave has
+function getWaveEnemyCount(wave) {
+
+return 10 + ((wave - 1) * 5);
+
+}
+
+// Start a wave
+
+function startWave() {
+
+waveEnemiesTotal =
+    getWaveEnemyCount(currentWave);
+
+waveEnemiesRemaining =
+    waveEnemiesTotal;
+
+kills = 0;
+
+waveStarted = true;
+waveSpawningFinished = false;
+
+spawnTimer = 0;
+
+updateProgress();
+
+}
 
 // ==============================
 // ELAPSED TIME
@@ -55,15 +95,17 @@ if (!running) {
     return;
 }
 
-let currentTime = performance.now();
+const currentTime = performance.now();
 
-let elapsedMilliseconds =
+const elapsedMilliseconds =
     currentTime -
     gameStartTime -
     pausedTime;
 
-let elapsedSeconds =
-    Math.floor(elapsedMilliseconds / 1000);
+const elapsedSeconds =
+    Math.floor(
+        elapsedMilliseconds / 1000
+    );
 
 const minutes =
     Math.floor(elapsedSeconds / 60);
@@ -89,12 +131,13 @@ radius: 35
 // ==============================
 
 const sword = {
+
 angle: 0,
 
 length: 110,
+
 width: 12,
 
-// How forgiving the sword collision is
 hitbox: 18
 
 };
@@ -104,9 +147,13 @@ hitbox: 18
 // ==============================
 
 const upgrades = {
+
 sword: 0,
+
 length: 0,
+
 speed: 0
+
 };
 
 // ==============================
@@ -115,30 +162,38 @@ speed: 0
 
 function updateSwordPosition(x, y) {
 
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
+const centerX =
+    canvas.width / 2;
 
-sword.angle = Math.atan2(
-    y - centerY,
-    x - centerX
-);
+const centerY =
+    canvas.height / 2;
+
+sword.angle =
+    Math.atan2(
+        y - centerY,
+        x - centerX
+    );
 
 }
 
 // Desktop
 
-canvas.addEventListener("mousemove", (event) => {
+canvas.addEventListener(
+"mousemove",
+(event) => {
 
-if (!running || gamePaused) {
-    return;
+    if (!running || gamePaused) {
+        return;
+    }
+
+    updateSwordPosition(
+        event.clientX,
+        event.clientY
+    );
+
 }
 
-updateSwordPosition(
-    event.clientX,
-    event.clientY
 );
-
-});
 
 // Mobile
 
@@ -150,7 +205,8 @@ canvas.addEventListener(
         return;
     }
 
-    const touch = event.touches[0];
+    const touch =
+        event.touches[0];
 
     updateSwordPosition(
         touch.clientX,
@@ -172,7 +228,8 @@ canvas.addEventListener(
 
     event.preventDefault();
 
-    const touch = event.touches[0];
+    const touch =
+        event.touches[0];
 
     updateSwordPosition(
         touch.clientX,
@@ -195,52 +252,91 @@ const margin = 50;
 let x;
 let y;
 
-const side = Math.floor(Math.random() * 4);
+const side =
+    Math.floor(
+        Math.random() * 4
+    );
+
 
 if (side === 0) {
+
     // Top
-    x = Math.random() * canvas.width;
+
+    x =
+        Math.random() *
+        canvas.width;
+
     y = -margin;
+
 }
 
 else if (side === 1) {
+
     // Right
-    x = canvas.width + margin;
-    y = Math.random() * canvas.height;
+
+    x =
+        canvas.width +
+        margin;
+
+    y =
+        Math.random() *
+        canvas.height;
+
 }
 
 else if (side === 2) {
+
     // Bottom
-    x = Math.random() * canvas.width;
-    y = canvas.height + margin;
+
+    x =
+        Math.random() *
+        canvas.width;
+
+    y =
+        canvas.height +
+        margin;
+
 }
 
 else {
+
     // Left
+
     x = -margin;
-    y = Math.random() * canvas.height;
+
+    y =
+        Math.random() *
+        canvas.height;
 }
 
 
-// Banana speed increases slowly
+// Banana speed increases
+// as the waves progress
+
 const speed =
     1.5 +
     Math.random() * 1.2 +
+    currentWave * 0.08 +
     totalKills * 0.003;
 
 
 bananas.push({
+
     x: x,
+
     y: y,
 
     radius: 17,
 
     speed: speed,
 
-    rotation: Math.random() * Math.PI * 2,
+    rotation:
+        Math.random() *
+        Math.PI * 2,
 
     rotationSpeed:
-        (Math.random() - 0.5) * 0.08
+        (Math.random() - 0.5) *
+        0.08
 });
 
 }
@@ -253,24 +349,63 @@ let spawnTimer = 0;
 
 function handleSpawning() {
 
+// Don't spawn more once
+// this wave is finished
+
+if (
+    waveEnemiesRemaining <= 0
+) {
+
+    waveSpawningFinished = true;
+
+    return;
+}
+
+
 spawnTimer++;
 
-// Start with one banana every ~45 frames
+
+// Spawn faster on later waves
+
 const spawnRate =
     Math.max(
-        12,
-        45 - Math.floor(totalKills / 5)
+        10,
+        35 -
+        currentWave
     );
 
-if (spawnTimer >= spawnRate) {
+
+if (
+    spawnTimer >=
+    spawnRate
+) {
 
     spawnTimer = 0;
 
     spawnBanana();
 
-    // Occasionally spawn another banana
-    if (Math.random() < 0.15) {
+    waveEnemiesRemaining--;
+
+
+    // Occasionally spawn
+    // an extra banana
+
+    if (
+        waveEnemiesRemaining > 0 &&
+        Math.random() < 0.15
+    ) {
+
         spawnBanana();
+
+        waveEnemiesRemaining--;
+    }
+
+
+    if (
+        waveEnemiesRemaining <= 0
+    ) {
+
+        waveSpawningFinished = true;
     }
 }
 
@@ -280,10 +415,18 @@ if (spawnTimer >= spawnRate) {
 // DISTANCE
 // ==============================
 
-function distance(x1, y1, x2, y2) {
+function distance(
+x1,
+y1,
+x2,
+y2
+) {
 
-const dx = x2 - x1;
-const dy = y2 - y1;
+const dx =
+    x2 - x1;
+
+const dy =
+    y2 - y1;
 
 return Math.sqrt(
     dx * dx +
@@ -298,62 +441,91 @@ return Math.sqrt(
 
 function bananaHitBySword(banana) {
 
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
+const centerX =
+    canvas.width / 2;
 
-// Vector from orange to banana
-const dx = banana.x - centerX;
-const dy = banana.y - centerY;
+const centerY =
+    canvas.height / 2;
+
+
+const dx =
+    banana.x -
+    centerX;
+
+const dy =
+    banana.y -
+    centerY;
+
 
 const bananaDistance =
-    Math.sqrt(dx * dx + dy * dy);
+    Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
 
 
-// Banana must be somewhere along the sword
 if (
     bananaDistance >
-    sword.length + sword.hitbox
+    sword.length +
+    sword.hitbox
 ) {
+
     return false;
 }
 
 
-// Don't hit things inside the orange
 if (
     bananaDistance <
     orange.radius
 ) {
+
     return false;
 }
 
 
-// Angle from orange to banana
 const bananaAngle =
-    Math.atan2(dy, dx);
+    Math.atan2(
+        dy,
+        dx
+    );
 
 
-// Difference between sword and banana angles
 let angleDifference =
-    bananaAngle - sword.angle;
+    bananaAngle -
+    sword.angle;
 
 
-// Normalize angle
-while (angleDifference > Math.PI) {
-    angleDifference -= Math.PI * 2;
+while (
+    angleDifference >
+    Math.PI
+) {
+
+    angleDifference -=
+        Math.PI * 2;
 }
 
-while (angleDifference < -Math.PI) {
-    angleDifference += Math.PI * 2;
+
+while (
+    angleDifference <
+    -Math.PI
+) {
+
+    angleDifference +=
+        Math.PI * 2;
 }
 
 
-// Sword gets wider with the sword upgrade
 const swordWidth =
     0.12 +
-    upgrades.sword * 0.035;
+    upgrades.sword *
+    0.035;
 
 
-return Math.abs(angleDifference) < swordWidth;
+return (
+    Math.abs(
+        angleDifference
+    ) < swordWidth
+);
 
 }
 
@@ -363,18 +535,58 @@ return Math.abs(angleDifference) < swordWidth;
 
 function killBanana(index) {
 
-bananas.splice(index, 1);
+bananas.splice(
+    index,
+    1
+);
 
 kills++;
+
 totalKills++;
+
 
 updateProgress();
 
-// Check for upgrade
-if (kills >= killsRequired) {
 
-    openUpgradeMenu();
+// Entire wave defeated
+
+if (
+    kills >=
+    waveEnemiesTotal &&
+    waveSpawningFinished &&
+    bananas.length === 0
+) {
+
+    completeWave();
 }
+
+}
+
+// ==============================
+// WAVE COMPLETE
+// ==============================
+
+function completeWave() {
+
+if (gamePaused) {
+    return;
+}
+
+
+// Final wave
+
+if (
+    currentWave >=
+    MAX_WAVES
+) {
+
+    winGame();
+
+    return;
+}
+
+
+openUpgradeMenu();
 
 }
 
@@ -382,10 +594,16 @@ if (kills >= killsRequired) {
 // BANANA REACHES ORANGE
 // ==============================
 
-function bananaReachedOrange(banana) {
+function bananaReachedOrange(
+banana
+) {
 
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
+const centerX =
+    canvas.width / 2;
+
+const centerY =
+    canvas.height / 2;
+
 
 return (
     distance(
@@ -406,24 +624,41 @@ return (
 
 function updateBananas() {
 
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
+const centerX =
+    canvas.width / 2;
 
-for (let i = bananas.length - 1; i >= 0; i--) {
+const centerY =
+    canvas.height / 2;
 
-    const banana = bananas[i];
+
+for (
+    let i =
+        bananas.length - 1;
+
+    i >= 0;
+
+    i--
+) {
+
+    const banana =
+        bananas[i];
+
 
     const dx =
-        centerX - banana.x;
+        centerX -
+        banana.x;
 
     const dy =
-        centerY - banana.y;
+        centerY -
+        banana.y;
+
 
     const length =
         Math.sqrt(
             dx * dx +
             dy * dy
         );
+
 
     banana.x +=
         (dx / length) *
@@ -433,12 +668,18 @@ for (let i = bananas.length - 1; i >= 0; i--) {
         (dy / length) *
         banana.speed;
 
+
     banana.rotation +=
         banana.rotationSpeed;
 
 
     // Sword collision
-    if (bananaHitBySword(banana)) {
+
+    if (
+        bananaHitBySword(
+            banana
+        )
+    ) {
 
         killBanana(i);
 
@@ -447,12 +688,31 @@ for (let i = bananas.length - 1; i >= 0; i--) {
 
 
     // Orange collision
-    if (bananaReachedOrange(banana)) {
+
+    if (
+        bananaReachedOrange(
+            banana
+        )
+    ) {
 
         endGame();
 
         return;
     }
+}
+
+
+// This is important because
+// the last banana can be killed
+// before the spawning state updates.
+
+if (
+    waveSpawningFinished &&
+    bananas.length === 0 &&
+    kills >= waveEnemiesTotal
+) {
+
+    completeWave();
 }
 
 }
@@ -466,14 +726,24 @@ function updateProgress() {
 killCountElement.textContent =
     kills;
 
+
 killText.textContent =
-    `${kills} / ${killsRequired}`;
+    `${kills} / ${waveEnemiesTotal}`;
+
+
+waveText.textContent =
+    `WAVE ${currentWave} / ${MAX_WAVES}`;
+
 
 const percentage =
     Math.min(
         100,
-        (kills / killsRequired) * 100
+        (
+            kills /
+            waveEnemiesTotal
+        ) * 100
     );
+
 
 progressBar.style.width =
     `${percentage}%`;
@@ -488,9 +758,12 @@ function openUpgradeMenu() {
 
 gamePaused = true;
 
-pauseStartTime = performance.now();
+pauseStartTime =
+    performance.now();
 
-upgradeMenu.classList.add("open");
+upgradeMenu.classList.add(
+    "open"
+);
 
 }
 
@@ -499,7 +772,6 @@ function chooseUpgrade(type) {
 if (type === "sword") {
 
     upgrades.sword++;
-
 }
 
 else if (type === "length") {
@@ -507,37 +779,35 @@ else if (type === "length") {
     upgrades.length++;
 
     sword.length += 25;
-
 }
 
 else if (type === "speed") {
 
     upgrades.speed++;
-
 }
 
 
-// Add time spent in the upgrade menu to paused time
+// Add upgrade menu time
+// to paused time
+
 pausedTime +=
     performance.now() -
     pauseStartTime;
 
 
-// Reset kills
-kills = 0;
+// Move to next wave
+
+currentWave++;
 
 
-// Increase requirement
-killsRequired =
-    Math.ceil(
-        killsRequired * 1.35
-    );
+// Start next wave
+
+startWave();
 
 
-updateProgress();
-
-
-upgradeMenu.classList.remove("open");
+upgradeMenu.classList.remove(
+    "open"
+);
 
 gamePaused = false;
 
@@ -545,21 +815,27 @@ gamePaused = false;
 
 // Upgrade buttons
 
-upgradeButtons.forEach((button) => {
+upgradeButtons.forEach(
+(button) => {
 
-button.addEventListener(
-    "click",
-    () => {
+    button.addEventListener(
+        "click",
+        () => {
 
-        const upgrade =
-            button.dataset.upgrade;
+            const upgrade =
+                button.dataset
+                    .upgrade;
 
-        chooseUpgrade(upgrade);
+            chooseUpgrade(
+                upgrade
+            );
 
-    }
+        }
+    );
+
+}
+
 );
-
-});
 
 // ==============================
 // BACK TO GAMES
@@ -582,13 +858,17 @@ backToGamesButton.addEventListener(
 
 function drawOrange() {
 
-const x = canvas.width / 2;
-const y = canvas.height / 2;
+const x =
+    canvas.width / 2;
+
+const y =
+    canvas.height / 2;
+
+
+ctx.save();
 
 
 // Orange body
-
-ctx.save();
 
 ctx.beginPath();
 
@@ -600,11 +880,16 @@ ctx.arc(
     Math.PI * 2
 );
 
-ctx.fillStyle = "#f7931e";
+ctx.fillStyle =
+    "#f7931e";
+
 ctx.fill();
 
-ctx.strokeStyle = "#c75b00";
+ctx.strokeStyle =
+    "#c75b00";
+
 ctx.lineWidth = 4;
+
 ctx.stroke();
 
 
@@ -620,7 +905,9 @@ ctx.arc(
     Math.PI * 2
 );
 
-ctx.fillStyle = "#ffd27a";
+ctx.fillStyle =
+    "#ffd27a";
+
 ctx.fill();
 
 
@@ -638,8 +925,11 @@ ctx.ellipse(
     Math.PI * 2
 );
 
-ctx.fillStyle = "#4caf50";
+ctx.fillStyle =
+    "#4caf50";
+
 ctx.fill();
+
 
 ctx.restore();
 
@@ -651,8 +941,12 @@ ctx.restore();
 
 function drawSword() {
 
-const centerX = canvas.width / 2;
-const centerY = canvas.height / 2;
+const centerX =
+    canvas.width / 2;
+
+const centerY =
+    canvas.height / 2;
+
 
 const swordStart =
     orange.radius - 3;
@@ -662,6 +956,7 @@ const swordEnd =
 
 
 ctx.save();
+
 
 ctx.translate(
     centerX,
@@ -675,7 +970,8 @@ ctx.rotate(
 
 // Handle
 
-ctx.fillStyle = "#6b3f20";
+ctx.fillStyle =
+    "#6b3f20";
 
 ctx.fillRect(
     swordStart - 3,
@@ -687,7 +983,8 @@ ctx.fillRect(
 
 // Guard
 
-ctx.fillStyle = "#777";
+ctx.fillStyle =
+    "#777";
 
 ctx.fillRect(
     swordStart - 5,
@@ -728,11 +1025,18 @@ ctx.lineTo(
 
 ctx.closePath();
 
-ctx.fillStyle = "#ddd";
+
+ctx.fillStyle =
+    "#ddd";
+
 ctx.fill();
 
-ctx.strokeStyle = "#888";
+
+ctx.strokeStyle =
+    "#888";
+
 ctx.lineWidth = 2;
+
 ctx.stroke();
 
 
@@ -747,6 +1051,7 @@ ctx.restore();
 function drawBanana(banana) {
 
 ctx.save();
+
 
 ctx.translate(
     banana.x,
@@ -771,9 +1076,12 @@ ctx.arc(
 );
 
 ctx.lineWidth = 13;
-ctx.lineCap = "round";
 
-ctx.strokeStyle = "#f5d742";
+ctx.lineCap =
+    "round";
+
+ctx.strokeStyle =
+    "#f5d742";
 
 ctx.stroke();
 
@@ -792,14 +1100,16 @@ ctx.arc(
 
 ctx.lineWidth = 4;
 
-ctx.strokeStyle = "#9c7910";
+ctx.strokeStyle =
+    "#9c7910";
 
 ctx.stroke();
 
 
 // Stem
 
-ctx.fillStyle = "#70551c";
+ctx.fillStyle =
+    "#70551c";
 
 ctx.fillRect(
     -3,
@@ -829,7 +1139,8 @@ ctx.clearRect(
 
 // Background
 
-ctx.fillStyle = "#151515";
+ctx.fillStyle =
+    "#151515";
 
 ctx.fillRect(
     0,
@@ -839,7 +1150,7 @@ ctx.fillRect(
 );
 
 
-// Slight arena circle
+// Arena circle
 
 ctx.beginPath();
 
@@ -861,8 +1172,13 @@ ctx.stroke();
 
 // Bananas
 
-for (const banana of bananas) {
-    drawBanana(banana);
+for (
+    const banana of bananas
+) {
+
+    drawBanana(
+        banana
+    );
 }
 
 
@@ -883,7 +1199,10 @@ drawSword();
 
 function gameLoop() {
 
-if (running && !gamePaused) {
+if (
+    running &&
+    !gamePaused
+) {
 
     handleSpawning();
 
@@ -892,7 +1211,9 @@ if (running && !gamePaused) {
     updateElapsedTime();
 }
 
+
 draw();
+
 
 requestAnimationFrame(
     gameLoop
@@ -910,12 +1231,51 @@ if (!running) {
     return;
 }
 
+
 running = false;
+
 
 finalKills.textContent =
     totalKills;
 
-gameOver.classList.add("open");
+
+gameOver.classList.add(
+    "open"
+);
+
+}
+
+// ==============================
+// VICTORY
+// ==============================
+
+function winGame() {
+
+if (!running) {
+    return;
+}
+
+
+running = false;
+
+
+finalKills.textContent =
+    totalKills;
+
+
+gameOver.classList.add(
+    "open"
+);
+
+
+const title =
+    gameOver.querySelector(
+        "h1"
+    );
+
+
+title.textContent =
+    "🏆 YOU SURVIVED!";
 
 }
 
@@ -926,22 +1286,39 @@ gameOver.classList.add("open");
 function restartGame() {
 
 running = true;
+
 gamePaused = false;
 
+
 kills = 0;
-killsRequired = 10;
+
 totalKills = 0;
 
+
+currentWave = 1;
+
+
 bananas = [];
+
 
 spawnTimer = 0;
 
 
+waveStarted = false;
+
+waveSpawningFinished =
+    false;
+
+
 // Reset timer
 
-gameStartTime = performance.now();
+gameStartTime =
+    performance.now();
+
 pausedTime = 0;
+
 pauseStartTime = 0;
+
 
 elapsedTimeElement.textContent =
     "0:00";
@@ -950,18 +1327,36 @@ elapsedTimeElement.textContent =
 // Reset upgrades
 
 upgrades.sword = 0;
+
 upgrades.length = 0;
+
 upgrades.speed = 0;
 
 
 sword.length = 110;
 
 
-gameOver.classList.remove("open");
+// Reset game-over title
 
-upgradeMenu.classList.remove("open");
+const title =
+    gameOver.querySelector(
+        "h1"
+    );
 
-updateProgress();
+title.textContent =
+    "🍌 GAME OVER";
+
+
+gameOver.classList.remove(
+    "open"
+);
+
+upgradeMenu.classList.remove(
+    "open"
+);
+
+
+startWave();
 
 }
 
@@ -973,6 +1368,8 @@ restartGame
 // ==============================
 // START
 // ==============================
+
+startWave();
 
 updateProgress();
 
