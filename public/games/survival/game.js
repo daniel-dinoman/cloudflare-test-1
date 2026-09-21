@@ -261,8 +261,8 @@ function spawnBanana() {
             (Math.random() - 0.5) * 0.08,
 
         // HP
-        hp: 3,
-        maxHp: 3
+        hp: 1,
+        maxHp: 1
     });
 }
 
