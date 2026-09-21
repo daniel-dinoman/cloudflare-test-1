@@ -148,13 +148,9 @@ hitbox: 18
 // ==============================
 
 const upgrades = {
-
-sword: 0,
-
-length: 0,
-
-speed: 0
-
+    sword: 0,
+    length: 0,
+    health: 0
 };
 
 // ==============================
@@ -810,45 +806,46 @@ upgradeMenu.classList.add(
 
 function chooseUpgrade(type) {
 
-if (type === "sword") {
+    if (type === "sword") {
 
-    upgrades.sword++;
+        upgrades.sword++;
+
+    }
+
+    else if (type === "length") {
+
+        upgrades.length++;
+
+        sword.length += 25;
+
+    }
+
+    else if (type === "health") {
+
+        if (orangeHealth < MAX_ORANGE_HEALTH) {
+
+            orangeHealth++;
+
+            upgrades.health++;
+
+            updateHealthDisplay();
+
+        }
+
+    }
+
+    pausedTime +=
+        performance.now() -
+        pauseStartTime;
+
+    currentWave++;
+
+    startWave();
+
+    upgradeMenu.classList.remove("open");
+
+    gamePaused = false;
 }
-
-else if (type === "length") {
-
-    upgrades.length++;
-
-    sword.length += 25;
-}
-
-else if (type === "speed") {
-
-    upgrades.speed++;
-}
-
-
-// Add upgrade menu time
-// to paused time
-
-pausedTime +=
-    performance.now() -
-    pauseStartTime;
-
-
-// Move to next wave
-
-currentWave++;
-
-
-// Start next wave
-
-startWave();
-
-
-upgradeMenu.classList.remove(
-    "open"
-);
 
 gamePaused = false;
 
@@ -1371,7 +1368,7 @@ upgrades.sword = 0;
 
 upgrades.length = 0;
 
-upgrades.speed = 0;
+upgrades.health = 0;
 
 
 sword.length = 110;
