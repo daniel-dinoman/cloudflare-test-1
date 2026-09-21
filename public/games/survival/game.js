@@ -724,6 +724,14 @@ for (
     
         bananas.splice(i, 1);
     
+        // Count the banana as cleared
+        // even though it wasn't killed
+        kills++;
+    
+        totalKills++;
+    
+        updateProgress();
+    
         damageOrange();
     
         if (!running) {
