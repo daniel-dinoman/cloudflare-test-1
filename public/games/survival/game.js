@@ -1088,77 +1088,119 @@ ctx.restore();
 
 function drawBanana(banana) {
 
-ctx.save();
+    ctx.save();
 
+    ctx.translate(
+        banana.x,
+        banana.y
+    );
 
-ctx.translate(
-    banana.x,
-    banana.y
-);
+    ctx.rotate(
+        banana.rotation
+    );
 
-ctx.rotate(
-    banana.rotation
-);
+    // Banana body
+    ctx.beginPath();
 
+    ctx.moveTo(-15, 11);
 
-// Banana body
+    // Bottom curve
+    ctx.bezierCurveTo(
+        -2, 22,
+        17, 19,
+        25, 5
+    );
 
-ctx.beginPath();
+    // Tip curve
+    ctx.bezierCurveTo(
+        31, -5,
+        29, -13,
+        25, -17
+    );
 
-ctx.arc(
-    0,
-    0,
-    banana.radius,
-    Math.PI * 0.15,
-    Math.PI * 1.45
-);
+    ctx.lineWidth = 14;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
 
-ctx.lineWidth = 13;
+    ctx.strokeStyle = "#f5d742";
+    ctx.stroke();
 
-ctx.lineCap =
-    "round";
+    // Darker banana outline
+    ctx.beginPath();
 
-ctx.strokeStyle =
-    "#f5d742";
+    ctx.moveTo(-15, 11);
 
-ctx.stroke();
+    ctx.bezierCurveTo(
+        -2, 22,
+        17, 19,
+        25, 5
+    );
 
+    ctx.bezierCurveTo(
+        31, -5,
+        29, -13,
+        25, -17
+    );
 
-// Banana outline
+    ctx.lineWidth = 18;
+    ctx.lineCap = "round";
 
-ctx.beginPath();
+    ctx.strokeStyle = "#9c7910";
+    ctx.stroke();
 
-ctx.arc(
-    0,
-    0,
-    banana.radius,
-    Math.PI * 0.15,
-    Math.PI * 1.45
-);
+    // Draw the yellow body again over the outline
+    ctx.beginPath();
 
-ctx.lineWidth = 4;
+    ctx.moveTo(-15, 11);
 
-ctx.strokeStyle =
-    "#9c7910";
+    ctx.bezierCurveTo(
+        -2, 22,
+        17, 19,
+        25, 5
+    );
 
-ctx.stroke();
+    ctx.bezierCurveTo(
+        31, -5,
+        29, -13,
+        25, -17
+    );
 
+    ctx.lineWidth = 13;
+    ctx.lineCap = "round";
 
-// Stem
+    ctx.strokeStyle = "#f5d742";
+    ctx.stroke();
 
-ctx.fillStyle =
-    "#70551c";
+    // Small brown stem
+    ctx.beginPath();
 
-ctx.fillRect(
-    -3,
-    -19,
-    6,
-    7
-);
+    ctx.moveTo(25, -17);
+    ctx.lineTo(29, -21);
 
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
 
-ctx.restore();
+    ctx.strokeStyle = "#70551c";
+    ctx.stroke();
 
+    // Small highlight
+    ctx.beginPath();
+
+    ctx.moveTo(-8, 10);
+
+    ctx.bezierCurveTo(
+        2, 15,
+        12, 14,
+        18, 7
+    );
+
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+
+    ctx.strokeStyle = "#ffe875";
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 // ==============================
