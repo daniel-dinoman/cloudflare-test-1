@@ -123,13 +123,12 @@ const sword = {
     width: 12,
     hitbox: 18,
 
-    // Damage dealt per hit
-    damage: 1,
+    // 15x less damage
+    damage: 1 / 15,
 
-    // Seconds between attacks
-    attackCooldown: 0.4,
+    // 15x faster attacks
+    attackCooldown: 0.4 / 15,
 
-    // Time until the sword can attack again
     attackTimer: 0
 };
 
@@ -633,7 +632,7 @@ function chooseUpgrade(type) {
     if (type === "sword") {
         upgrades.sword++;
 
-        sword.damage++;
+        sword.damage += 1 / 15;
     }
 
     // LONGER SWORD
@@ -650,8 +649,8 @@ function chooseUpgrade(type) {
         // Reduce cooldown by 0.05 seconds
         sword.attackCooldown =
             Math.max(
-                0.1,
-                sword.attackCooldown - 0.05
+                0.005,
+                sword.attackCooldown - 0.00333
             );
     }
 
