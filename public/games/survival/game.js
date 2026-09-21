@@ -847,10 +847,6 @@ function chooseUpgrade(type) {
     gamePaused = false;
 }
 
-gamePaused = false;
-
-}
-
 // Upgrade buttons
 
 upgradeButtons.forEach(
