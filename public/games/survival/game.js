@@ -8,7 +8,7 @@ const waveText = document.querySelector("#waveText");
 
 const elapsedTimeElement = document.querySelector("#elapsedTime");
 const backToGamesButton = document.querySelector("#backToGames");
-
+const healthElement = document.querySelector("#health");
 const upgradeMenu = document.querySelector("#upgradeMenu");
 const upgradeButtons = document.querySelectorAll(".upgradeButton");
 
@@ -615,14 +615,35 @@ function bananaReachedOrange(banana) {
     );
 }
 
+function updateHealthDisplay() {
+
+    let hearts = "";
+
+    for (let i = 0; i < MAX_ORANGE_HEALTH; i++) {
+
+        if (i < orangeHealth) {
+            hearts += "❤️";
+        } else {
+            hearts += "🖤";
+        }
+
+    }
+
+    healthElement.textContent = hearts;
+}
+
 function damageOrange() {
 
     orangeHealth--;
+
+    updateHealthDisplay();
 
     if (orangeHealth <= 0) {
         endGame();
     }
 }
+
+
 
 // ==============================
 // UPDATE BANANAS
@@ -1298,7 +1319,7 @@ title.textContent =
 function restartGame() {
 orangeHealth = MAX_ORANGE_HEALTH;
 running = true;
-
+updateHealthDisplay();
 gamePaused = false;
 
 
@@ -1384,5 +1405,7 @@ restartGame
 startWave();
 
 updateProgress();
+
+updateHealthDisplay();
 
 gameLoop();
