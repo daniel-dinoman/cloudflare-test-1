@@ -729,6 +729,12 @@ function chooseUpgrade(type) {
     gamePaused = false;
 }
 
+upgradeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const upgrade = button.dataset.upgrade;
+        chooseUpgrade(upgrade);
+    });
+});
 
 
 // BACK TO GAMES
