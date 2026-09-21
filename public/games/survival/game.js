@@ -45,43 +45,82 @@ let bananas = [];
 // WAVES
 // ==============================
 
-const MAX_WAVES = 20;
+// WAVE TABLE
+const waves = [
+    { banana: 10 }, // wave 1
+    { banana: 15 }, // wave 2
+    { banana: 20 }, // wave 3
+    { banana: 25 }, // wave 4
+    { banana: 30 }, // wave 5
+    { banana: 70 }, // wave 6
+
+    { banana: 25, fastBanana: 5 }, // no waves under this work yet
+    { banana: 30, fastBanana: 10 },
+    { banana: 35, fastBanana: 10 },
+
+    { banana: 30, strongBanana: 5 },
+    { banana: 35, strongBanana: 10 },
+    { banana: 40, fastBanana: 10, strongBanana: 5 },
+
+    { banana: 40, fastBanana: 15, strongBanana: 10 },
+    { banana: 45, strongBanana: 15 },
+    { banana: 50, fastBanana: 15, strongBanana: 15 },
+
+    { banana: 50, fastBanana: 20, strongBanana: 15 },
+    { banana: 55, fastBanana: 20, strongBanana: 20 },
+
+    { banana: 60, fastBanana: 20, strongBanana: 20 },
+    { banana: 65, fastBanana: 25, strongBanana: 20 },
+
+    { banana: 70, fastBanana: 25, strongBanana: 25 },
+
+    { banana: 80, fastBanana: 30, strongBanana: 30 }
+];
+
+const MAX_WAVES = waves.length;
 
 let currentWave = 1;
-let waveEnemiesTotal = 10;
-let waveEnemiesRemaining = 10;
-
+let waveEnemiesTotal = 0;
+let waveEnemiesRemaining = 0;
 let waveStarted = false;
 let waveSpawningFinished = false;
 
-// How many enemies each wave has
-function getWaveEnemyCount(wave) {
-
-return 10 + ((wave - 1) * 5);
-
-}
+// Enemies waiting to spawn
+let waveSpawnQueue = [];
 
 // Start a wave
 
 function startWave() {
+    const waveData = waves[currentWave - 1];
 
-waveEnemiesTotal =
-    getWaveEnemyCount(currentWave);
+    waveSpawnQueue = [];
 
-waveEnemiesRemaining =
-    waveEnemiesTotal;
+    // Turn the wave table into a spawn queue
+    for (const enemyType in waveData) {
+        const amount = waveData[enemyType];
 
-kills = 0;
+        for (let i = 0; i < amount; i++) {
+            waveSpawnQueue.push(enemyType);
+        }
+    }
 
-waveStarted = true;
-waveSpawningFinished = false;
+    // Shuffle the enemies so they aren't grouped by type
+    for (let i = waveSpawnQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [waveSpawnQueue[i], waveSpawnQueue[j]] =
+        [waveSpawnQueue[j], waveSpawnQueue[i]];
+    }
 
-spawnTimer = 0;
+    waveEnemiesTotal = waveSpawnQueue.length;
+    waveEnemiesRemaining = waveSpawnQueue.length;
 
-updateProgress();
+    kills = 0;
+    waveStarted = true;
+    waveSpawningFinished = false;
+    spawnTimer = 0;
 
+    updateProgress();
 }
-
 // ==============================
 // ELAPSED TIME
 // ==============================
@@ -344,70 +383,44 @@ bananas.push({
 
 let spawnTimer = 0;
 
-function handleSpawning() {
+function spawnEnemy(type) {
+    if (type === "banana") {
+        spawnBanana();
+    }
 
-// Don't spawn more once
-// this wave is finished
-
-if (
-    waveEnemiesRemaining <= 0
-) {
-
-    waveSpawningFinished = true;
-
-    return;
+    // Future enemy types can go here:
+    // else if (type === "fastBanana") {
+    //     spawnFastBanana();
+    // }
+    // else if (type === "strongBanana") {
+    //     spawnStrongBanana();
+    // }
 }
 
+function handleSpawning() {
+    if (waveSpawnQueue.length <= 0) {
+        waveSpawningFinished = true;
+        return;
+    }
 
-spawnTimer++;
+    spawnTimer++;
 
+    const spawnRate = Math.max(10, 35 - currentWave);
 
-// Spawn faster on later waves
+    if (spawnTimer >= spawnRate) {
+        spawnTimer = 0;
 
-const spawnRate =
-    Math.max(
-        10,
-        35 -
-        currentWave
-    );
+        const enemyType = waveSpawnQueue.shift();
 
-
-if (
-    spawnTimer >=
-    spawnRate
-) {
-
-    spawnTimer = 0;
-
-    spawnBanana();
-
-    waveEnemiesRemaining--;
-
-
-    // Occasionally spawn
-    // an extra banana
-
-    if (
-        waveEnemiesRemaining > 0 &&
-        Math.random() < 0.15
-    ) {
-
-        spawnBanana();
+        spawnEnemy(enemyType);
 
         waveEnemiesRemaining--;
-    }
 
-
-    if (
-        waveEnemiesRemaining <= 0
-    ) {
-
-        waveSpawningFinished = true;
+        if (waveSpawnQueue.length <= 0) {
+            waveSpawningFinished = true;
+        }
     }
 }
-
-}
-
 // ==============================
 // DISTANCE
 // ==============================
