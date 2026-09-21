@@ -214,6 +214,7 @@ canvas.addEventListener(
 
 // BANANA
 function spawnBanana() {
+    
     const margin = 50;
 
     let x;
@@ -258,8 +259,59 @@ function spawnBanana() {
             (Math.random() - 0.5) * 0.08,
 
         // HP
-        hp: 1,
-        maxHp: 1
+        hp: 0.01,
+        maxHp: 0.01
+        type: "banana"
+    });
+}
+
+function spawnFastBanana() {
+    const margin = 50;
+
+    let x;
+    let y;
+
+    const side = Math.floor(Math.random() * 4);
+
+    if (side === 0) {
+        x = Math.random() * canvas.width;
+        y = -margin;
+    }
+    else if (side === 1) {
+        x = canvas.width + margin;
+        y = Math.random() * canvas.height;
+    }
+    else if (side === 2) {
+        x = Math.random() * canvas.width;
+        y = canvas.height + margin;
+    }
+    else {
+        x = -margin;
+        y = Math.random() * canvas.height;
+    }
+
+    const speed =
+        3.5 +
+        Math.random() * 1.5 +
+        currentWave * 0.1;
+
+    bananas.push({
+        x: x,
+        y: y,
+
+        radius: 15,
+
+        speed: speed,
+
+        rotation: Math.random() * Math.PI * 2,
+
+        rotationSpeed:
+            (Math.random() - 0.5) * 0.12,
+
+        hp: 0.1,
+        maxHp: 0.1,
+
+        type: "fastBanana"
     });
 }
 
@@ -269,12 +321,11 @@ function spawnEnemy(type) {
     if (type === "banana") {
         spawnBanana();
     }
+    else if (type === "fastBanana") {
+        spawnFastBanana();
+    }
 
-    // Future enemy types can be added here:
-    //
-    // else if (type === "fastBanana") {
-    //     spawnFastBanana();
-    // }
+    // Future enemy types:
     //
     // else if (type === "strongBanana") {
     //     spawnStrongBanana();
@@ -885,6 +936,10 @@ function drawSword() {
 function drawBanana(banana) {
     ctx.save();
 
+    const isFast = banana.type === "fastBanana";
+    ctx.strokeStyle = isFast ? "#ff9d00" : "#f5d742";
+    ctx.strokeStyle = isFast ? "#a85c00" : "#9c7910";
+    
     ctx.translate(
         banana.x,
         banana.y
