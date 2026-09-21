@@ -123,11 +123,9 @@ const sword = {
     width: 12,
     hitbox: 18,
 
-    // 15x less damage
     damage: 1 / 15,
 
-    // 15x faster attacks
-    attackCooldown: 0.4 / 15,
+    attackCooldown: 0.01,
 
     attackTimer: 0
 };
@@ -514,9 +512,9 @@ function updateBananas(deltaTime) {
         sword.attackTimer >=
         sword.attackCooldown;
 
-    if (canAttack) {
-        sword.attackTimer = 0;
-    }
+        if (canAttack) {
+            sword.attackTimer -= sword.attackCooldown;
+        }
 
     for (
         let i = bananas.length - 1;
@@ -645,13 +643,11 @@ function chooseUpgrade(type) {
     // FASTER ATTACKS
     else if (type === "attackSpeed") {
         upgrades.attackSpeed++;
-
-        // Reduce cooldown by 0.05 seconds
-        sword.attackCooldown =
-            Math.max(
-                0.005,
-                sword.attackCooldown - 0.00333
-            );
+    
+        sword.attackCooldown = Math.max(
+            0.002,
+            sword.attackCooldown - 0.001
+        );
     }
 
     // MORE HEALTH
