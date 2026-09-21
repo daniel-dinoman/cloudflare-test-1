@@ -260,7 +260,7 @@ function spawnBanana() {
 
         // HP
         hp: 0.01,
-        maxHp: 0.01
+        maxHp: 0.01,
         type: "banana"
     });
 }
