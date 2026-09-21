@@ -730,53 +730,6 @@ function chooseUpgrade(type) {
 }
 
 
-// AUTOMATICALLY ADD FASTER ATTACKS BUTTON
-// This means your current HTML does not need
-// to be changed just to get the new upgrade.
-
-if (
-    !upgradeMenu.querySelector(
-        '[data-upgrade="attackSpeed"]'
-    )
-) {
-    const attackButton =
-        document.createElement("button");
-
-    attackButton.className =
-        "upgradeButton";
-
-    attackButton.dataset.upgrade =
-        "attackSpeed";
-
-    attackButton.innerHTML = `
-        <strong>⏱️ FASTER ATTACKS</strong>
-        <span>Attack 0.05 seconds faster.</span>
-    `;
-
-    upgradeMenu.appendChild(
-        attackButton
-    );
-}
-
-
-// Refresh button list after adding button
-upgradeButtons =
-    document.querySelectorAll(
-        ".upgradeButton"
-    );
-
-upgradeButtons.forEach(button => {
-    button.addEventListener(
-        "click",
-        () => {
-            const upgrade =
-                button.dataset.upgrade;
-
-            chooseUpgrade(upgrade);
-        }
-    );
-});
-
 
 // BACK TO GAMES
 backToGamesButton.addEventListener(
