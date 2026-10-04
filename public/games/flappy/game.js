@@ -2,8 +2,10 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const scoreDisplay = document.getElementById("score");
+const highScoreDisplay = document.getElementById("high-score");
 const gameOverDisplay = document.getElementById("game-over");
 const finalScoreDisplay = document.getElementById("final-score");
+const finalHighScoreDisplay = document.getElementById("final-high-score");
 
 const orange = {
     x: 150,
@@ -19,12 +21,20 @@ const bananaWidth = 70;
 const gap = 180;
 const speed = 3;
 
-// Minimum distance between pipe sets
 const minBananaDistance = 280;
 
 let bananas = [];
 let score = 0;
 let gameOver = false;
+
+
+// ====================
+// HIGH SCORE
+// ====================
+
+let highScore = Number(localStorage.getItem("flappyOrangeHighScore")) || 0;
+
+highScoreDisplay.textContent = "High Score: " + highScore;
 
 
 // ====================
@@ -71,17 +81,26 @@ canvas.addEventListener("touchstart", event => {
 
 function spawnBananas() {
 
-    // Don't spawn if the previous pipe is still too close
     if (bananas.length > 0) {
-        const lastBanana = bananas[bananas.length - 1];
 
-        if (lastBanana.x > canvas.width - minBananaDistance) {
+        const lastBanana =
+            bananas[bananas.length - 1];
+
+        if (
+            lastBanana.x >
+            canvas.width - minBananaDistance
+        ) {
             return;
         }
     }
 
+
     const gapY =
-        Math.random() * (canvas.height - gap - 100) + gap / 2 + 50;
+        Math.random() *
+        (canvas.height - gap - 100) +
+        gap / 2 +
+        50;
+
 
     bananas.push({
         x: canvas.width,
@@ -96,6 +115,7 @@ function spawnBananas() {
 // ====================
 
 function drawOrange() {
+
     ctx.beginPath();
 
     ctx.arc(
@@ -108,6 +128,7 @@ function drawOrange() {
 
     ctx.fillStyle = "#f47c00";
     ctx.fill();
+
 
     // Stem
     ctx.beginPath();
@@ -142,7 +163,8 @@ function drawBananaPipes() {
         const bottomY =
             banana.gapY + gap / 2;
 
-        // Top yellow square
+
+        // Top pipe
         ctx.fillStyle = "#ffd21f";
 
         ctx.fillRect(
@@ -153,7 +175,7 @@ function drawBananaPipes() {
         );
 
 
-        // Bottom yellow square
+        // Bottom pipe
         ctx.fillRect(
             banana.x,
             bottomY,
@@ -182,7 +204,6 @@ function update() {
 
     for (const banana of bananas) {
 
-        // Move pipes
         banana.x -= speed;
 
 
@@ -191,14 +212,30 @@ function update() {
             !banana.passed &&
             banana.x + bananaWidth < orange.x
         ) {
+
             banana.passed = true;
             score++;
 
             scoreDisplay.textContent = score;
+
+
+            // New high score
+            if (score > highScore) {
+
+                highScore = score;
+
+                localStorage.setItem(
+                    "flappyOrangeHighScore",
+                    highScore
+                );
+
+                highScoreDisplay.textContent =
+                    "High Score: " + highScore;
+            }
         }
 
 
-        // Gap boundaries
+        // Collision boundaries
         const topEnd =
             banana.gapY - gap / 2;
 
@@ -221,7 +258,7 @@ function update() {
     }
 
 
-    // Remove pipes that have left the screen
+    // Remove old pipes
     bananas = bananas.filter(
         banana => banana.x + bananaWidth > 0
     );
@@ -249,7 +286,13 @@ function endGame() {
 
     gameOver = true;
 
+
     finalScoreDisplay.textContent = score;
+
+    finalHighScoreDisplay.textContent =
+        highScore;
+
+
     gameOverDisplay.style.display = "flex";
 }
 
@@ -299,7 +342,7 @@ function restart() {
 
 
     scoreDisplay.textContent = "0";
-    finalScoreDisplay.textContent = "0";
+
     gameOverDisplay.style.display = "none";
 
 
@@ -312,6 +355,7 @@ function restart() {
 // ====================
 
 function gameLoop() {
+
     update();
     draw();
 
@@ -324,7 +368,7 @@ spawnBananas();
 gameLoop();
 
 
-// Try to spawn a new pipe set
+// Spawn pipes
 setInterval(() => {
 
     if (!gameOver) {
