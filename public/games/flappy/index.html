@@ -62,6 +62,21 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
         }
 
+        #high-score {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            width: 100%;
+
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
         #game-over {
             position: absolute;
             inset: 0;
@@ -92,6 +107,10 @@
             font-weight: bold;
             font-size: 30px !important;
         }
+
+        .final-high-score {
+            font-size: 22px !important;
+        }
     </style>
 </head>
 
@@ -105,12 +124,22 @@
 
     <div id="score">0</div>
 
+    <div id="high-score">
+        High Score: 0
+    </div>
+
     <div id="game-over">
         <div class="game-over-box">
             <h1>GAME OVER</h1>
+
             <p>Press any key to restart</p>
+
             <p class="final-score">
                 Score: <span id="final-score">0</span>
+            </p>
+
+            <p class="final-high-score">
+                High Score: <span id="final-high-score">0</span>
             </p>
         </div>
     </div>
