@@ -70,7 +70,7 @@ let intermissionTimer = null;
 
 let gameRunning = false;
 
-let timeLeft = 10;
+let timeLeft = 3;
 let intermissionTimeLeft = 7;
 
 
@@ -174,8 +174,6 @@ function movePlayer(direction) {
             break;
     }
 
-    // Don't allow the player to leave the grid.
-
     if (
         newRow < 0 ||
         newRow > 7 ||
@@ -245,14 +243,13 @@ function startRound() {
 
     chooseTargetColor();
 
-    // Start the player somewhere random.
-
     playerPosition =
         Math.floor(Math.random() * 64);
 
     updatePlayer();
 
-    timeLeft = 10;
+    // 3 second round
+    timeLeft = 3;
 
     timerDisplay.textContent = timeLeft;
 
@@ -294,8 +291,6 @@ function finishRound() {
         targetColor.name
     ) {
 
-        // Correct!
-
         score++;
 
         scoreDisplay.textContent = score;
@@ -307,10 +302,7 @@ function finishRound() {
 
     } else {
 
-        // Wrong tile.
-
         gameOver();
-
     }
 }
 
@@ -325,6 +317,11 @@ function startIntermission() {
 
     intermissionTimeLeft = 7;
 
+    // Show the intermission countdown
+    // on the main counter too.
+    timerDisplay.textContent =
+        intermissionTimeLeft;
+
     intermissionTimerDisplay.textContent =
         intermissionTimeLeft;
 
@@ -333,6 +330,10 @@ function startIntermission() {
     intermissionTimer = setInterval(() => {
 
         intermissionTimeLeft--;
+
+        // Update BOTH counters
+        timerDisplay.textContent =
+            intermissionTimeLeft;
 
         intermissionTimerDisplay.textContent =
             intermissionTimeLeft;
