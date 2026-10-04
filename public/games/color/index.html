@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Orange Color Rush</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background: #17120d;
+            color: #fff4df;
+
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-block;
+
+            margin-bottom: 15px;
+            padding: 10px 16px;
+
+            background: #f47c00;
+            color: #fff4df;
+
+            text-decoration: none;
+            font-weight: bold;
+
+            border: 2px solid #ffad32;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            background: #ff8c00;
+        }
+
+        h1 {
+            margin: 5px 0 20px;
+            font-size: clamp(28px, 7vw, 48px);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+
+            margin-bottom: 18px;
+        }
+
+        .stats > div {
+            min-width: 120px;
+
+            padding: 10px 18px;
+
+            background: #24150d;
+            border: 2px solid #8c4b13;
+            border-radius: 10px;
+        }
+
+        .stats span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.75;
+        }
+
+        .stats strong {
+            display: block;
+            margin-top: 3px;
+            font-size: 24px;
+        }
+
+        .target-area {
+            margin-bottom: 15px;
+        }
+
+        #status {
+            min-height: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .target-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            font-weight: bold;
+        }
+
+        #targetColor {
+            width: 28px;
+            height: 28px;
+
+            border-radius: 6px;
+            border: 2px solid #fff4df;
+        }
+
+        #timer {
+            margin-top: 8px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .grid {
+            width: min(90vw, 560px);
+            aspect-ratio: 1;
+
+            margin: 0 auto;
+
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+
+            background: #0e0b08;
+            padding: 5px;
+
+            border: 3px solid #8c4b13;
+            border-radius: 10px;
+        }
+
+        .tile {
+            position: relative;
+
+            border-radius: 5px;
+        }
+
+        .tile.player {
+            outline: 4px solid #fff4df;
+            outline-offset: -4px;
+
+            transform: scale(0.88);
+
+            z-index: 2;
+        }
+
+        .tile.player::after {
+            content: "🍊";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
+
+            font-size: clamp(18px, 5vw, 32px);
+        }
+
+        .intermission {
+            margin-top: 15px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            font-size: 18px;
+        }
+
+        .game-over {
+            margin: 20px auto 0;
+
+            padding: 20px;
+
+            max-width: 350px;
+
+            background: #24150d;
+            border: 3px solid #f47c00;
+            border-radius: 12px;
+        }
+
+        .game-over h2 {
+            margin-top: 0;
+            font-size: 32px;
+        }
+
+        .game-over p {
+            font-size: 20px;
+        }
+
+        .new-high-score {
+            color: #ffad32;
+            font-weight: bold;
+        }
+
+        button {
+            border: 2px solid #ffad32;
+            border-radius: 8px;
+
+            padding: 12px 22px;
+
+            background: #f47c00;
+            color: #fff4df;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ff8c00;
+        }
+
+        .controls {
+            margin-top: 15px;
+            opacity: 0.6;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stats > div {
+                min-width: 100px;
+                padding: 8px 12px;
+            }
+
+            .grid {
+                gap: 3px;
+                padding: 3px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="game-container">
+
+        <a href="/games" class="back-button">
+            ← Back to Games
+        </a>
+
+        <h1>Orange Color Rush</h1>
+
+        <div class="stats">
+
+            <div>
+                <span>Score</span>
+                <strong id="score">0</strong>
+            </div>
+
+            <div>
+                <span>High Score</span>
+                <strong id="highScore">0</strong>
+            </div>
+
+        </div>
+
+        <div class="target-area">
+
+            <div id="status">
+                Get ready!
+            </div>
+
+            <div class="target-row">
+
+                <span>Target:</span>
+
+                <div id="targetColor"></div>
+
+            </div>
+
+            <div id="timer">
+                10
+            </div>
+
+        </div>
+
+        <div id="grid" class="grid"></div>
+
+        <div id="gameOver" class="game-over hidden">
+
+            <h2>Game Over!</h2>
+
+            <p>
+                Score:
+                <strong id="finalScore">0</strong>
+            </p>
+
+            <p id="newHighScore" class="new-high-score hidden">
+                NEW HIGH SCORE!
+            </p>
+
+            <button id="restartButton">
+                Play Again
+            </button>
+
+        </div>
+
+        <div id="intermission" class="intermission hidden">
+
+            <strong>Nice!</strong>
+
+            <span>
+                Next round in
+                <b id="intermissionTimer">7</b>
+            </span>
+
+        </div>
+
+        <p class="controls">
+            WASD / Arrow Keys to move
+        </p>
+
+    </main>
+
+    <script src="game.js"></script>
+
+</body>
+</html>
