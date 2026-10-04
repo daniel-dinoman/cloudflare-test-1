@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Orange</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #17120d;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            background: #87ceeb;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+
+            padding: 10px 16px;
+            background: #f47c00;
+            color: #fff4df;
+            border: 2px solid #ffad32;
+            border-radius: 8px;
+
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background: #ff8c00;
+        }
+    </style>
+</head>
+
+<body>
+
+<a href="/games" class="back-button">← Back to Games</a>
+
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const orange = {
+    x: 150,
+    y: 300,
+    radius: 22,
+    velocity: 0
+};
+
+const gravity = 0.45;
+const flapStrength = -8;
+
+let bananas = [];
+let score = 0;
+let gameOver = false;
+
+const bananaWidth = 90;
+const gap = 180;
+const speed = 3;
+
+function flap() {
+    if (gameOver) {
+        restart();
+        return;
+    }
+
+    orange.velocity = flapStrength;
+}
+
+document.addEventListener("keydown", event => {
+    if (event.code === "Space") {
+        event.preventDefault();
+        flap();
+    }
+});
+
+canvas.addEventListener("mousedown", flap);
+
+canvas.addEventListener("touchstart", event => {
+    event.preventDefault();
+    flap();
+});
+
+function spawnBananas() {
+    const gapY = Math.random() * 300 + 100;
+
+    bananas.push({
+        x: canvas.width,
+        gapY: gapY,
+        passed: false
+    });
+}
+
+function drawOrange() {
+    ctx.beginPath();
+    ctx.arc(
+        orange.x,
+        orange.y,
+        orange.radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle = "#f47c00";
+    ctx.fill();
+
+    // Stem
+    ctx.beginPath();
+    ctx.moveTo(
+        orange.x,
+        orange.y - orange.radius + 3
+    );
+
+    ctx.lineTo(
+        orange.x + 3,
+        orange.y - orange.radius - 5
+    );
+
+    ctx.strokeStyle = "#713b00";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+}
+
+function drawBanana(x, y, upsideDown) {
+    ctx.save();
+
+    ctx.translate(
+        x + bananaWidth / 2,
+        y
+    );
+
+    if (upsideDown) {
+        ctx.rotate(Math.PI);
+    }
+
+    // Banana body
+    ctx.beginPath();
+    ctx.arc(
+        0,
+        0,
+        35,
+        Math.PI * 0.15,
+        Math.PI * 0.85
+    );
+
+    ctx.lineWidth = 25;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffd21f";
+    ctx.stroke();
+
+    // Banana outline
+    ctx.beginPath();
+    ctx.arc(
+        0,
+        0,
+        35,
+        Math.PI * 0.15,
+        Math.PI * 0.85
+    );
+
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#8c6500";
+    ctx.stroke();
+
+    // Stem
+    ctx.fillStyle = "#594000";
+    ctx.fillRect(
+        -7,
+        -43,
+        14,
+        10
+    );
+
+    ctx.restore();
+}
+
+function drawBananaPipes() {
+    for (const banana of bananas) {
+
+        // Top banana
+        drawBanana(
+            banana.x,
+            banana.gapY - gap / 2,
+            true
+        );
+
+        // Bottom banana
+        drawBanana(
+            banana.x,
+            banana.gapY + gap / 2,
+            false
+        );
+    }
+}
+
+function update() {
+    if (gameOver) return;
+
+    orange.velocity += gravity;
+    orange.y += orange.velocity;
+
+    for (const banana of bananas) {
+        banana.x -= speed;
+
+        // Score
+        if (
+            !banana.passed &&
+            banana.x + bananaWidth < orange.x
+        ) {
+            banana.passed = true;
+            score++;
+        }
+
+        // Banana collision boundaries
+        const topEnd =
+            banana.gapY - gap / 2;
+
+        const bottomStart =
+            banana.gapY + gap / 2;
+
+        if (
+            orange.x + orange.radius > banana.x &&
+            orange.x - orange.radius <
+                banana.x + bananaWidth &&
+            (
+                orange.y - orange.radius < topEnd ||
+                orange.y + orange.radius > bottomStart
+            )
+        ) {
+            gameOver = true;
+        }
+    }
+
+    bananas = bananas.filter(
+        banana => banana.x + bananaWidth > 0
+    );
+
+    // Ceiling / ground
+    if (
+        orange.y - orange.radius < 0 ||
+        orange.y + orange.radius > canvas.height
+    ) {
+        gameOver = true;
+    }
+}
+
+function draw() {
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // Sky
+    ctx.fillStyle = "#87ceeb";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    drawBananaPipes();
+    drawOrange();
+
+    // Score
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 40px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        score,
+        canvas.width / 2,
+        60
+    );
+
+    // Game over screen
+    if (gameOver) {
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.fillStyle = "#fff4df";
+        ctx.font = "bold 55px Arial";
+
+        ctx.fillText(
+            "GAME OVER",
+            canvas.width / 2,
+            270
+        );
+
+        ctx.font = "25px Arial";
+
+        ctx.fillText(
+            "Click or press SPACE to restart",
+            canvas.width / 2,
+            320
+        );
+
+        ctx.font = "bold 30px Arial";
+
+        ctx.fillText(
+            "Score: " + score,
+            canvas.width / 2,
+            370
+        );
+    }
+}
+
+function restart() {
+    orange.y = 300;
+    orange.velocity = 0;
+
+    bananas = [];
+    score = 0;
+    gameOver = false;
+}
+
+function gameLoop() {
+    update();
+    draw();
+
+    requestAnimationFrame(gameLoop);
+}
+
+spawnBananas();
+gameLoop();
+
+setInterval(() => {
+    if (!gameOver) {
+        spawnBananas();
+    }
+}, 1800);
+</script>
+
+</body>
+</html>
