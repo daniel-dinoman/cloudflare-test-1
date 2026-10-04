@@ -15,9 +15,12 @@ const orange = {
 const gravity = 0.45;
 const flapStrength = -8;
 
-const bananaWidth = 90;
+const bananaWidth = 70;
 const gap = 180;
 const speed = 3;
+
+// Minimum distance between pipe sets
+const minBananaDistance = 280;
 
 let bananas = [];
 let score = 0;
@@ -67,7 +70,18 @@ canvas.addEventListener("touchstart", event => {
 // ====================
 
 function spawnBananas() {
-    const gapY = Math.random() * 300 + 100;
+
+    // Don't spawn if the previous pipe is still too close
+    if (bananas.length > 0) {
+        const lastBanana = bananas[bananas.length - 1];
+
+        if (lastBanana.x > canvas.width - minBananaDistance) {
+            return;
+        }
+    }
+
+    const gapY =
+        Math.random() * (canvas.height - gap - 100) + gap / 2 + 50;
 
     bananas.push({
         x: canvas.width,
@@ -115,83 +129,36 @@ function drawOrange() {
 
 
 // ====================
-// BANANAS
+// BANANA PIPES
 // ====================
 
-function drawBanana(x, y, upsideDown) {
-    ctx.save();
-
-    ctx.translate(
-        x + bananaWidth / 2,
-        y
-    );
-
-    if (upsideDown) {
-        ctx.rotate(Math.PI);
-    }
-
-    // Banana body
-    ctx.beginPath();
-
-    ctx.arc(
-        0,
-        0,
-        35,
-        Math.PI * 0.15,
-        Math.PI * 0.85
-    );
-
-    ctx.lineWidth = 25;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#ffd21f";
-    ctx.stroke();
-
-
-    // Banana outline
-    ctx.beginPath();
-
-    ctx.arc(
-        0,
-        0,
-        35,
-        Math.PI * 0.15,
-        Math.PI * 0.85
-    );
-
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#8c6500";
-    ctx.stroke();
-
-
-    // Stem
-    ctx.fillStyle = "#594000";
-
-    ctx.fillRect(
-        -7,
-        -43,
-        14,
-        10
-    );
-
-    ctx.restore();
-}
-
-
 function drawBananaPipes() {
+
     for (const banana of bananas) {
 
-        // Top banana
-        drawBanana(
+        const topHeight =
+            banana.gapY - gap / 2;
+
+        const bottomY =
+            banana.gapY + gap / 2;
+
+        // Top yellow square
+        ctx.fillStyle = "#ffd21f";
+
+        ctx.fillRect(
             banana.x,
-            banana.gapY - gap / 2,
-            true
+            0,
+            bananaWidth,
+            topHeight
         );
 
-        // Bottom banana
-        drawBanana(
+
+        // Bottom yellow square
+        ctx.fillRect(
             banana.x,
-            banana.gapY + gap / 2,
-            false
+            bottomY,
+            bananaWidth,
+            canvas.height - bottomY
         );
     }
 }
@@ -202,6 +169,7 @@ function drawBananaPipes() {
 // ====================
 
 function update() {
+
     if (gameOver) {
         return;
     }
@@ -214,7 +182,7 @@ function update() {
 
     for (const banana of bananas) {
 
-        // Move banana
+        // Move pipes
         banana.x -= speed;
 
 
@@ -230,7 +198,7 @@ function update() {
         }
 
 
-        // Collision boundaries
+        // Gap boundaries
         const topEnd =
             banana.gapY - gap / 2;
 
@@ -238,7 +206,7 @@ function update() {
             banana.gapY + gap / 2;
 
 
-        // Collision with banana
+        // Collision
         if (
             orange.x + orange.radius > banana.x &&
             orange.x - orange.radius <
@@ -253,13 +221,13 @@ function update() {
     }
 
 
-    // Remove bananas that left the screen
+    // Remove pipes that have left the screen
     bananas = bananas.filter(
         banana => banana.x + bananaWidth > 0
     );
 
 
-    // Ceiling / ground collision
+    // Ceiling / floor
     if (
         orange.y - orange.radius < 0 ||
         orange.y + orange.radius > canvas.height
@@ -274,6 +242,7 @@ function update() {
 // ====================
 
 function endGame() {
+
     if (gameOver) {
         return;
     }
@@ -329,13 +298,11 @@ function restart() {
     gameOver = false;
 
 
-    // Reset HTML UI
     scoreDisplay.textContent = "0";
     finalScoreDisplay.textContent = "0";
     gameOverDisplay.style.display = "none";
 
 
-    // Spawn first bananas
     spawnBananas();
 }
 
@@ -352,19 +319,16 @@ function gameLoop() {
 }
 
 
-// ====================
-// START GAME
-// ====================
-
+// Start
 spawnBananas();
 gameLoop();
 
 
-// Spawn bananas every 1.8 seconds
+// Try to spawn a new pipe set
 setInterval(() => {
 
     if (!gameOver) {
         spawnBananas();
     }
 
-}, 1800);
+}, 1000);
